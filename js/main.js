@@ -19,7 +19,7 @@ const handleSignInValidation = () => {
 
   if (usernameValue === "justen" || passwordValue === "password") {
     console.log("Sign in successful");
-    window.location.href = "landing-page.html";
+    window.location.href = "dashboard.html";
   } else {
     console.log("Sign in unsuccessful");
     alert("⛔️ Please insert valid credentials");
