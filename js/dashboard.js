@@ -1,4 +1,4 @@
-console.log("landingPage.js is running");
+console.log("dashboard.js is running");
 
 const handleLogOff = () => {
   window.location.href = "index.html";

@@ -1,3 +1,5 @@
+// index.html
+
 console.log("main.js is running");
 0;
 
@@ -26,6 +28,8 @@ const handleSignInValidation = () => {
     alert("⛔️ Please insert valid credentials");
   }
 };
+
+// sidebar menu
 
 // 404.html
 
