@@ -31,6 +31,17 @@ const handleSignInValidation = () => {
 
 // sidebar menu
 
+const handleLogOff = () => {
+  const logOffConfirmation = window.confirm(
+    "Are you sure you want to log off?"
+  );
+  if (logOffConfirmation) {
+    window.location.href = "index.html";
+  } else {
+    alert("Log Off Cancelled");
+  }
+};
+
 // 404.html
 
 const handleGoHome = () => {
