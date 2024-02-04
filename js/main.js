@@ -1,4 +1,5 @@
 console.log("main.js is running");
+0;
 
 const handleForgetPassword = () => {
   console.log("Forget Password Button clicked");
@@ -24,4 +25,11 @@ const handleSignInValidation = () => {
     console.log("Sign in unsuccessful");
     alert("⛔️ Please insert valid credentials");
   }
+};
+
+// 404.html
+
+const handleGoHome = () => {
+  console.log("Take me home button clicked");
+  window.location.href = "index.html";
 };
