@@ -32,3 +32,6 @@ bower_components/
 # OS-generated files
 Thumbs.db
 .DS_Store
+
+# specific file
+utility/command.md
