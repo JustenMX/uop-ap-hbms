@@ -5,7 +5,7 @@ const tableBody = document.getElementById("patientTableBody");
 
 const patientCategory = dummyPatientData.forEach((patient) => {
   const rowContent = `
-  <tr class="border-b border-opacity-20 dark:border-gray-700 dark:bg-gray-900">
+  <tr class="border-b border-opacity-20 border-gray-700 bg-gray-100 dark:border-gray-700 dark:bg-gray-900">
   <td class="p-3">${patient.UID}</td>
   <td class="p-3">${patient.firstName}</td>
   <td class="p-3">${patient.lastName}</td>
