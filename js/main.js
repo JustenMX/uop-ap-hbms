@@ -1,7 +1,6 @@
 // index.html
 
 console.log("main.js is running");
-0;
 
 const handleForgetPassword = () => {
   console.log("Forget Password Button clicked");
@@ -20,7 +19,7 @@ const handleSignInValidation = () => {
   console.log("Username:", usernameValue);
   console.log("Password:", passwordValue);
 
-  if (usernameValue === "justen" || passwordValue === "password") {
+  if (usernameValue === "justen" && passwordValue === "password") {
     console.log("Sign in successful");
     window.location.href = "dashboard.html";
   } else {
