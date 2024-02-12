@@ -10,18 +10,18 @@
   <body class="flex bg-neutral-50">
     <!-- Start: Side Bar Menu -->
     <aside
-      class="flex flex-col w-64 h-screen px-4 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700"
+      class="flex flex-col w-64 h-screen px-4 py-8 overflow-y-auto bg-stone-200 border-r rtl:border-r-0 rtl:border-l dark:bg-neutral-900 dark:border-neutral-700"
     >
       <div class="flex flex-col m-2 justify-center mb-4">
         <a href="#" class="mx-auto flex justify-center">
           <img
-            class="w-auto h-12 sm:h-11 border rounded-full"
+            class="w-auto h-12 sm:h-11 border border-white rounded-full"
             src="./asset/image/main/logo.png"
             alt="logo"
           />
         </a>
         <h1
-          class="dark:text-white text-gray-600 font-semibold ml-2 flex justify-center text-xs mt-2"
+          class="dark:text-white text-neutral-600 font-semibold ml-2 flex justify-center text-xs mt-2"
         >
           Evergreen General Hospital
         </h1>
@@ -33,10 +33,10 @@
           src="https://avatars.githubusercontent.com/u/109763106?v=4"
           alt="avatar"
         />
-        <h4 class="mx-2 mt-2 text-sm text-gray-800 dark:text-gray-200">
+        <h4 class="mx-2 mt-2 text-sm text-neutral-800 dark:text-neutral-200">
           Justen Manni
         </h4>
-        <p class="mx-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
+        <p class="mx-2 mt-1 text-xs text-neutral-600 dark:text-neutral-400">
           CT0174642@kaplan.edu.sg
         </p>
       </div>
@@ -44,7 +44,7 @@
       <div class="flex flex-col justify-between flex-1 mt-6">
         <nav>
           <a
-            class="flex items-center px-4 py-2 mt-2 text-gray-700 bg-gray-100 rounded-lg dark:bg-gray-800 dark:text-gray-200"
+            class="flex items-center px-4 py-2 mt-2 text-neutral-100 bg-neutral-800 rounded-lg dark:bg-neutral-800 dark:text-neutral-200"
             href="dashboard.html"
           >
             <svg
@@ -66,7 +66,7 @@
           </a>
 
           <a
-            class="flex items-center px-4 py-2 mt-5 text-gray-600 transition-colors duration-300 transform rounded-lg dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
+            class="flex items-center px-4 py-2 mt-5 text-neutral-600 transition-colors duration-300 transform rounded-lg dark:text-neutral-400 hover:bg-neutral-800 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 hover:text-neutral-100"
             href="records.html"
           >
             <svg
@@ -95,7 +95,7 @@
           </a>
 
           <a
-            class="flex items-center px-4 py-2 mt-5 text-gray-600 transition-colors duration-300 transform rounded-lg dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
+            class="flex items-center px-4 py-2 mt-5 text-neutral-600 transition-colors duration-300 transform rounded-lg dark:text-neutral-400 hover:bg-neutral-800 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 hover:text-neutral-100"
             href="admission.html"
           >
             <svg
@@ -119,7 +119,7 @@
           <a
             onclick="handleLogOff()"
             href="#"
-            class="flex items-center px-4 py-2 mt-5 text-gray-600 transition-colors duration-300 transform rounded-lg dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
+            class="flex items-center px-4 py-2 mt-5 text-neutral-600 transition-colors duration-300 transform rounded-lg dark:text-neutral-400 hover:bg-neutral-800 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 hover:text-neutral-100"
           >
             <svg
               class="w-5 h-5"
@@ -153,10 +153,8 @@
     <!-- Start: Main Content Div -->
     <div class="flex-1 p-8">
       <!-- Start: Top Banner -->
-      <div class="bg-indigo-800 px-4 py-3 text-slate-900 shadow-md rounded-xl">
-        <p class="text-center text-sm font-bold text-white">
-          HOSPITAL BED MANAGEMENT DASHBOARD
-        </p>
+      <div class="bg-stone-200 px-4 py-3 text-neutral-900 shadow-md rounded-xl">
+        <p class="text-center text-sm font-bold">DASHBOARD</p>
       </div>
       <!-- End: Top Banner -->
 
@@ -164,20 +162,20 @@
       <div>
         <!-- Start: Metric Modules -->
         <!-- Row 1 -->
-        <section class="p-6 my-6 dark:text-gray-100">
+        <section class="p-6 my-6 dark:text-neutral-100">
           <div
             class="container grid grid-cols-1 gap-6 mx-auto sm:grid-cols-2 xl:grid-cols-4"
           >
             <!-- Admissions Today -->
             <div
-              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-gray-900 dark:text-gray-100 bg-stone-100 shadow-md"
+              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-neutral-900 dark:text-neutral-100 bg-stone-100 shadow-md"
             >
               <div
                 class="flex justify-center p-2 align-middle rounded-lg sm:p-4 bg-yellow-400"
               >
                 <img
                   src="./asset/image/dashboard/admission.svg"
-                  class="h-auto w-9 dark:text-gray-800"
+                  class="h-auto w-9 dark:text-neutral-800"
                 />
               </div>
               <div class="flex flex-col justify-center align-middle">
@@ -188,14 +186,14 @@
             </div>
             <!-- General Ward Total Occupancy -->
             <div
-              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-gray-900 dark:text-gray-100 bg-stone-100 shadow-md"
+              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-neutral-900 dark:text-neutral-100 bg-stone-100 shadow-md"
             >
               <div
                 class="flex justify-center p-2 align-middle rounded-lg sm:p-4 dark:bg-yellow-400 bg-yellow-400"
               >
                 <img
                   src="./asset/image/dashboard/general-ward.svg"
-                  class="h-auto w-9 dark:text-gray-800"
+                  class="h-auto w-9 dark:text-neutral-800"
                 />
               </div>
               <div class="flex flex-col justify-center align-middle">
@@ -206,14 +204,14 @@
             </div>
             <!-- Intensive Ward Total Occupancy -->
             <div
-              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-gray-900 dark:text-gray-100 bg-stone-100 shadow-md"
+              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-neutral-900 dark:text-neutral-100 bg-stone-100 shadow-md"
             >
               <div
                 class="flex justify-center p-2 align-middle rounded-lg sm:p-4 bg-yellow-400"
               >
                 <img
                   src="./asset/image/dashboard/intensive-ward.svg"
-                  class="h-auto w-9 dark:text-gray-800"
+                  class="h-auto w-9 dark:text-neutral-800"
                 />
               </div>
               <div class="flex flex-col justify-center align-middle">
@@ -225,14 +223,14 @@
 
             <!-- Infectious Ward Total Occupancy -->
             <div
-              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-gray-900 dark:text-gray-100 bg-stone-100 shadow-md"
+              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-neutral-900 dark:text-neutral-100 bg-stone-100 shadow-md"
             >
               <div
                 class="flex justify-center p-2 align-middle rounded-lg sm:p-4 bg-yellow-400"
               >
                 <img
                   src="./asset/image/dashboard/infectious-ward.svg"
-                  class="h-auto w-9 dark:text-gray-800"
+                  class="h-auto w-9 dark:text-neutral-800"
                 />
               </div>
               <div class="flex flex-col justify-center align-middle">
@@ -244,14 +242,14 @@
             <!-- Row 2 -->
             <!-- Holding Bay -->
             <div
-              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-gray-900 dark:text-gray-100 bg-stone-100 shadow-md"
+              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-neutral-900 dark:text-neutral-100 bg-stone-100 shadow-md"
             >
               <div
                 class="flex justify-center p-2 align-middle rounded-lg sm:p-4 bg-yellow-400"
               >
                 <img
                   src="./asset/image/dashboard/wait.svg"
-                  class="h-auto w-9 dark:text-gray-800"
+                  class="h-auto w-9 dark:text-neutral-800"
                 />
               </div>
               <div class="flex flex-col justify-center align-middle">
@@ -262,14 +260,14 @@
             </div>
             <!-- General Ward Occupancy -->
             <div
-              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-gray-900 dark:text-gray-100 bg-stone-100 shadow-md"
+              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-neutral-900 dark:text-neutral-100 bg-stone-100 shadow-md"
             >
               <div
                 class="flex justify-center p-2 align-middle rounded-lg sm:p-4 dark:bg-yellow-400 bg-yellow-400"
               >
                 <img
                   src="./asset/image/dashboard/bed.svg"
-                  class="h-auto w-9 dark:text-gray-800"
+                  class="h-auto w-9 dark:text-neutral-800"
                 />
               </div>
               <div class="flex flex-col justify-center align-middle">
@@ -282,14 +280,14 @@
             </div>
             <!-- Intensive Care Ward Occupancy -->
             <div
-              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-gray-900 dark:text-gray-100 bg-stone-100 shadow-md"
+              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-neutral-900 dark:text-neutral-100 bg-stone-100 shadow-md"
             >
               <div
                 class="flex justify-center p-2 align-middle rounded-lg sm:p-4 bg-yellow-400"
               >
                 <img
                   src="./asset/image/dashboard/bed.svg"
-                  class="h-auto w-9 dark:text-gray-800"
+                  class="h-auto w-9 dark:text-neutral-800"
                 />
               </div>
               <div class="flex flex-col justify-center align-middle">
@@ -301,14 +299,14 @@
               </div>
             </div>
             <div
-              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-gray-900 dark:text-gray-100 bg-stone-100 shadow-md"
+              class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-neutral-900 dark:text-neutral-100 bg-stone-100 shadow-md"
             >
               <div
                 class="flex justify-center p-2 align-middle rounded-lg sm:p-4 bg-yellow-400"
               >
                 <img
                   src="./asset/image/dashboard/bed.svg"
-                  class="h-auto w-9 dark:text-gray-800"
+                  class="h-auto w-9 dark:text-neutral-800"
                 />
               </div>
               <div class="flex flex-col justify-center align-middle">
@@ -337,7 +335,7 @@
                 alt="logo"
               />
             </div>
-            <p class="text-xs text-slate-500">
+            <p class="text-xs text-neutral-500">
               &copy; 2024. Evergreen General Hospital. All rights reserved.
             </p>
 
@@ -347,7 +345,7 @@
                   href="https://www.linkedin.com/in/justenmanni/"
                   rel="noreferrer"
                   target="_blank"
-                  class="text-gray-700 transition hover:opacity-75"
+                  class="text-neutral-700 transition hover:opacity-75"
                 >
                   <span class="sr-only">linkedin</span>
 
@@ -364,7 +362,7 @@
                   href="https://github.com/JustenMX"
                   rel="noreferrer"
                   target="_blank"
-                  class="text-gray-700 transition hover:opacity-75"
+                  class="text-neutral-700 transition hover:opacity-75"
                 >
                   <span class="sr-only">GitHub</span>
 
