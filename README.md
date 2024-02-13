@@ -10,3 +10,4 @@ The Hospital Bed Management System is a web application designed to efficiently 
 - **JavaScript (Vanilla JS)**: Implementation of dynamic and interactive features.
 - **Tailwindcss**: Styling and layout design.
 - **Eslint**: Static code analysis of JavaScript code.
+- **Axios**: Promise based HTTP client for the browser and node.js

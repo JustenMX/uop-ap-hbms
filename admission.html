@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bedflow - Hospital Bed Management Systems</title>
     <link rel="stylesheet" href="/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
   </head>
   <body class="flex bg-neutral-50">
     <!-- Start: Side Bar Menu -->
@@ -160,8 +161,192 @@
       </div>
       <!-- End: Top Banner -->
       <!-- Start: Content -->
-      <div class="my-10">
-        <h1>Hey There! This is the Admission Page!</h1>
+      <div class="flex justify-center">
+        <section
+          class="p-6 dark:text-neutral-100 border-gray-100 shadow-xs drop-shadow-lg rounded-lg"
+        >
+          <form
+            id="patientRegistrationForm"
+            novalidate=""
+            action=""
+            class="container flex flex-col mx-auto space-y-12"
+          >
+            <fieldset
+              class="grid grid-cols-4 gap-6 p-6 rounded-lg dark:bg-neutral-900 dark:text-neutral-100 bg-stone-100 shadow-md"
+            >
+              <div class="space-y-2 col-span-full lg:col-span-1">
+                <p class="font-medium">Patient Registration</p>
+                <p class="text-xs mr-4">
+                  BedFlow's patient registration system simplifies data entry
+                  for admissions officers to streamline their workflow, saving
+                  time and ensuring accurate record-keeping for enhanced patient
+                  care.
+                </p>
+              </div>
+              <div class="grid grid-cols-6 gap-4 col-span-full lg:col-span-3">
+                <div class="col-span-full sm:col-span-3">
+                  <label for="firstName" class="text-sm">First Name</label>
+                  <input
+                    id="firstName"
+                    type="text"
+                    placeholder="First name"
+                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                  />
+                </div>
+                <div class="col-span-full sm:col-span-3">
+                  <label for="lastName" class="text-sm">Last Name</label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    placeholder="Last name"
+                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                  />
+                </div>
+                <div class="col-span-full sm:col-span-2">
+                  <label for="email" class="text-sm">Email</label>
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="Email"
+                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                  />
+                </div>
+                <div class="col-span-full sm:col-span-2">
+                  <label for="mobile" class="text-sm">Mobile</label>
+                  <input
+                    id="mobile"
+                    type="text"
+                    placeholder="Mobile"
+                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                  />
+                </div>
+
+                <div class="col-span-full sm:col-span-1">
+                  <label for="dob" class="text-sm">Date of Birth</label>
+                  <input
+                    id="dob"
+                    type="date"
+                    placeholder="Date of Birth"
+                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                  />
+                </div>
+
+                <div class="col-span-full sm:col-span-1">
+                  <label for="gender" class="text-sm">Gender</label>
+                  <select
+                    id="gender"
+                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                  >
+                    <option value="" disabled selected>Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </div>
+
+                <div class="col-span-full sm:col-span-2">
+                  <label for="identification" class="text-sm"
+                    >Identification Number</label
+                  >
+                  <input
+                    id="identification"
+                    type="text"
+                    placeholder="NRIC / FIN / Passport"
+                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                  />
+                </div>
+
+                <div class="col-span-full sm:col-span-3">
+                  <label for="address" class="text-sm">Address</label>
+                  <input
+                    disabled
+                    id="address"
+                    type="text"
+                    placeholder="Automatically obtained from Postal Code"
+                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                  />
+                </div>
+
+                <div class="flex flex-row items-center">
+                  <div class="col-span-full sm:col-span-1">
+                    <label for="postalcode" class="text-sm">Postal Code</label>
+                    <input
+                      id="postalcode"
+                      type="text"
+                      placeholder=""
+                      class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                    />
+                  </div>
+                  <button
+                    onclick="getAddressFromPostalcode(event)"
+                    class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-4 py-2.5 m-2 mt-2 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+                  >
+                    🔎
+                  </button>
+                </div>
+
+                <div
+                  class="col-span-full bg-red-700 text-center rounded-sm mt-4"
+                >
+                  <p class="text-neutral-50 text-sm">Hospital Administration</p>
+                </div>
+
+                <div class="col-span-full sm:col-span-2">
+                  <label for="adcategory" class="text-sm"
+                    >Admission Category</label
+                  >
+                  <select
+                    id="adcategory"
+                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                  >
+                    <option value="" disabled selected>
+                      Select Admission Category
+                    </option>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="emergency">Emergency</option>
+                  </select>
+                </div>
+
+                <div class="col-span-full sm:col-span-2">
+                  <label for="mdcategory" class="text-sm"
+                    >Medical Category</label
+                  >
+                  <select
+                    id="mdcategory"
+                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                  >
+                    <option value="" disabled selected>
+                      Select medical category
+                    </option>
+                    <option value="general">General</option>
+                    <option value="intensive">Intensive Care</option>
+                    <option value="infectious">Infectious Disease</option>
+                  </select>
+                </div>
+
+                <div class="col-span-full sm:col-span-2">
+                  <label for="remark" class="text-sm">Remarks</label>
+                  <input
+                    id="remark"
+                    type="text"
+                    placeholder=""
+                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                  />
+                </div>
+                <div
+                  class="col-span-full flex justify-center mt-4 mx-32 shadow-lg"
+                >
+                  <button
+                    onclick="handlePatientSubmission()"
+                    type="button"
+                    class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800 w-full"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </section>
       </div>
       <!-- Start: Footer -->
       <footer class="bg-stone-200 rounded-xl">
@@ -221,7 +406,6 @@
       <!-- End: Footer -->
     </div>
     <!-- End: Main Content Div -->
-
     <script type="text/javascript" src="./js/admission.js"></script>
     <script type="text/javascript" src="./js/main.js"></script>
   </body>
