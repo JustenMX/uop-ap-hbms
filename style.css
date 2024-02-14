@@ -1243,6 +1243,11 @@ select {
   border-radius: 0.125rem;
 }
 
+.rounded-s-full {
+  border-start-start-radius: 9999px;
+  border-end-start-radius: 9999px;
+}
+
 .border {
   border-width: 1px;
 }
