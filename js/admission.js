@@ -106,25 +106,86 @@ const handlePatientSubmission = () => {
         joinDate: joinDate,
       };
       console.log(patientData);
-      openIndexDB();
+      openIndexDB(patientData);
       break;
   }
 };
 
 /**
- *
- * Open IndexDB
+ * ==============================================
+ * Open IndexDB (patientDatabase)
+ * ==============================================
  * https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
  * https://medium.com/@kamresh485/indexeddb-tutorial-for-beginners-a-comprehensive-guide-with-coding-examples-74df2914d4d5
- *
+ * ==============================================
  */
-const openIndexDB = () => {
-  // open database
-  const request = indexedDB.open("patientDatabase", 1);
 
-  // triggered when DB is first created / version changes
-  const onupgradeneeded = function (event) {
+const openIndexDB = (patientData) => {
+  // Check if the patientData is passed
+  if (!patientData) {
+    console.error("Patient data is missing.");
+    return;
+  } else {
+    console.log(patientData);
+  }
+
+  // Open database
+  const request = indexedDB.open("patientDatabase", 1);
+  console.log("stage 1");
+
+  // Triggered when DB is first created / version changes
+  request.onupgradeneeded = function (event) {
     const db = event.target.result;
     const objectStore = db.createObjectStore("patients", { keyPath: "uuid" });
+    // objectStore.createIndex("uuid", "uuid", { unique: true });
+    objectStore.createIndex("firstName", "firstName", { unique: false });
+    objectStore.createIndex("lastName", "lastName", { unique: false });
+    objectStore.createIndex("email", "email", { unique: false });
+    // objectStore.createIndex("mobile", "mobile", { unique: false });
+    // objectStore.createIndex("dob", "dob", { unique: false });
+    // objectStore.createIndex("gender", "gender", { unique: false });
+    // objectStore.createIndex("identification", "identification", {
+    //   unique: false,
+    // });
+    // objectStore.createIndex("address", "address", { unique: false });
+    // objectStore.createIndex("adcategory", "adcategory", { unique: false });
+    // objectStore.createIndex("mdcategory", "mdcategory", { unique: false });
+    // objectStore.createIndex("remark", "remark", { unique: false });
+    // objectStore.createIndex("joinDate", "joinDate", { unique: false });
+  };
+  console.log("stage 2");
+  // Handle successful opening of the database
+  request.onsuccess = function (event) {
+    const db = event.target.result;
+    const transaction = db.transaction(["patients"], "readwrite");
+
+    // Handle transaction completion
+    transaction.oncomplete = function (event) {
+      console.log("Transaction completed");
+    };
+
+    // Handle transaction error
+    transaction.onerror = function (event) {
+      console.error("Transaction error:", event.target.error);
+    };
+
+    const objectStore = transaction.objectStore("patients");
+    const addRequest = objectStore.add(patientData);
+
+    addRequest.onsuccess = function (event) {
+      console.log("Patient data added successfully");
+      alert("🟢 Patient data added successfully");
+      window.location.href = "dashboard.html";
+    };
+
+    addRequest.onerror = function (event) {
+      console.error("Error adding patient data: ", event.target.error);
+      alert("⚠️ Error adding patient data, please try again.");
+    };
+  };
+
+  // Handle errors when opening the database
+  request.onerror = function (event) {
+    console.error("Database error: " + event.target.errorCode);
   };
 };

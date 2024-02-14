@@ -1,16 +1,32 @@
-// index.html
-
 console.log("main.js is running");
+
+/**
+ * ==============================================
+ * handleForgetPassword
+ * ==============================================
+ */
 
 const handleForgetPassword = () => {
   console.log("Forget Password Button clicked");
   alert("🔒 Please contact Lilly Hope Hospital adminstration");
 };
 
+/**
+ * ==============================================
+ * handleSignUp
+ * ==============================================
+ */
+
 const handleSignUp = () => {
   console.log("Sign Up Button clicked");
   alert("🔒 Please contact Lilly Hope Hospital adminstration");
 };
+
+/**
+ * ==============================================
+ * handleSignInValidation
+ * ==============================================
+ */
 
 const handleSignInValidation = () => {
   const usernameValue = document.getElementById("usernameInput").value;
@@ -28,7 +44,11 @@ const handleSignInValidation = () => {
   }
 };
 
-// sidebar menu
+/**
+ * ==============================================
+ * handleLogOff
+ * ==============================================
+ */
 
 const handleLogOff = () => {
   const logOffConfirmation = window.confirm(
@@ -41,7 +61,11 @@ const handleLogOff = () => {
   }
 };
 
-// 404.html
+/**
+ * ==============================================
+ * handleGoHome (404.html)
+ * ==============================================
+ */
 
 const handleGoHome = () => {
   console.log("Take me home button clicked");
