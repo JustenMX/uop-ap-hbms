@@ -190,7 +190,7 @@
                     id="firstName"
                     type="text"
                     placeholder="First name"
-                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                    class="w-full rounded-md focus:ring dark:border-neutral-700 dark:text-neutral-900"
                   />
                 </div>
                 <div class="col-span-full sm:col-span-3">
@@ -202,7 +202,7 @@
                     class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
                   />
                 </div>
-                <div class="col-span-full sm:col-span-2">
+                <div class="col-span-full sm:col-span-3">
                   <label for="email" class="text-sm">Email</label>
                   <input
                     id="email"
@@ -211,7 +211,20 @@
                     class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
                   />
                 </div>
-                <div class="col-span-full sm:col-span-2">
+
+                <div class="col-span-full sm:col-span-3">
+                  <label for="identification" class="text-sm"
+                    >Identification Number</label
+                  >
+                  <input
+                    id="identification"
+                    type="text"
+                    placeholder="NRIC / FIN / Passport"
+                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                  />
+                </div>
+
+                <div class="col-span-full sm:col-span-3">
                   <label for="mobile" class="text-sm">Mobile</label>
                   <input
                     id="mobile"
@@ -221,7 +234,7 @@
                   />
                 </div>
 
-                <div class="col-span-full sm:col-span-1">
+                <div class="col-span-full sm:col-span-2">
                   <label for="dob" class="text-sm">Date of Birth</label>
                   <input
                     id="dob"
@@ -243,19 +256,7 @@
                   </select>
                 </div>
 
-                <div class="col-span-full sm:col-span-2">
-                  <label for="identification" class="text-sm"
-                    >Identification Number</label
-                  >
-                  <input
-                    id="identification"
-                    type="text"
-                    placeholder="NRIC / FIN / Passport"
-                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
-                  />
-                </div>
-
-                <div class="col-span-full sm:col-span-3">
+                <div class="col-span-full sm:col-span-4">
                   <label for="address" class="text-sm">Address</label>
                   <input
                     disabled
@@ -266,21 +267,21 @@
                   />
                 </div>
 
-                <div class="flex flex-row items-center">
-                  <div class="col-span-full sm:col-span-1">
-                    <label for="postalcode" class="text-sm">Postal Code</label>
-                    <input
-                      id="postalcode"
-                      type="text"
-                      placeholder=""
-                      class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
-                    />
-                  </div>
+                <div class="col-span-full sm:col-span-1">
+                  <label for="postalcode" class="text-sm">Postal Code</label>
+                  <input
+                    id="postalcode"
+                    type="text"
+                    placeholder=""
+                    class="w-full rounded-md focus:ring focus:ri focus:ri dark:border-neutral-700 dark:text-neutral-900"
+                  />
+                </div>
+                <div class="col-span-full sm:col-span-1 flex justify-center">
                   <button
                     onclick="getAddressFromPostalcode(event)"
-                    class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-4 py-2.5 m-2 mt-2 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+                    class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 rounded-lg text-sm text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800 w-full font-light"
                   >
-                    🔎
+                    Generate Address 🔎
                   </button>
                 </div>
 

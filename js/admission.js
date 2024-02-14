@@ -106,11 +106,25 @@ const handlePatientSubmission = () => {
         joinDate: joinDate,
       };
       console.log(patientData);
-      sayHello();
+      openIndexDB();
       break;
   }
 };
 
-const sayHello = () => {
-  console.log("hello");
+/**
+ *
+ * Open IndexDB
+ * https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
+ * https://medium.com/@kamresh485/indexeddb-tutorial-for-beginners-a-comprehensive-guide-with-coding-examples-74df2914d4d5
+ *
+ */
+const openIndexDB = () => {
+  // open database
+  const request = indexedDB.open("patientDatabase", 1);
+
+  // triggered when DB is first created / version changes
+  const onupgradeneeded = function (event) {
+    const db = event.target.result;
+    const objectStore = db.createObjectStore("patients", { keyPath: "uuid" });
+  };
 };
