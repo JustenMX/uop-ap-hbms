@@ -4,12 +4,12 @@ console.log("main.js is running");
 
 const handleForgetPassword = () => {
   console.log("Forget Password Button clicked");
-  alert("🔒 Please contact Evergreen General Hospital adminstration");
+  alert("🔒 Please contact Lilly Hope Hospital adminstration");
 };
 
 const handleSignUp = () => {
   console.log("Sign Up Button clicked");
-  alert("🔒 Please contact Evergreen General Hospital adminstration");
+  alert("🔒 Please contact Lilly Hope Hospital adminstration");
 };
 
 const handleSignInValidation = () => {
