@@ -26,33 +26,28 @@ const fetchDataFromPatientDatabase = (db) => {
       cursor.continue();
     } else {
       console.log("All objects retrieved:", patientDataArray);
+      const tableBody = document.getElementById("recordsTableBody");
+      console.log("patientDataArray " + patientDataArray);
+      const patientInsertTableRow = patientDataArray.map(
+        (patient) =>
+          `<tr class="border-b border-opacity-20 border-neutral-700 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900">
+        <td class="p-3">${patient.uuid}</td>
+        <td class="p-3">${patient.firstName}</td>
+        <td class="p-3">${patient.lastName}</td>
+        <td class="p-3">${patient.email}</td>
+        <td class="p-3">${patient.mobile}</td>
+        <td class="p-3">${patient.dob}</td>
+        <td class="p-3">${patient.gender}</td>
+        <td class="p-3">${patient.identification}</td>
+        <td class="p-3">${patient.address}</td>
+        <td class="p-3">${patient.adcategory}</td>
+        <td class="p-3">${patient.mdcategory}</td>
+        <td class="p-3">${patient.remark}</td>
+        <td class="p-3">${patient.timestamp}</td>
+      </tr>;`
+      );
+      // Join the HTML strings and set as innerHTML of the table body
+      tableBody.innerHTML = patientInsertTableRow.join("");
     }
   };
 };
-
-const tableBody = document.getElementById("patientTableBody");
-const patientCategory = dummyPatientData.forEach((patient) => {
-  const rowContent = `
-  <tr class="border-b border-opacity-20 border-gray-700 bg-gray-100 dark:border-gray-700 dark:bg-gray-900">
-  <td class="p-3">${patient.UID}</td>
-  <td class="p-3">${patient.firstName}</td>
-  <td class="p-3">${patient.lastName}</td>
-  <td class="p-3">${patient.dob}</td>
-  <td class="p-3">${patient.gender}</td>
-  <td class="p-3">${patient.phoneNumber}</td>
-  <td class="p-3">${patient.NRIC}</td>
-  <td class="p-3">${patient.admissionDateTime}</td>
-  <td class="p-3">
-  <span class="px-3 py-1 font-semibold rounded-md dark:bg-violet-400 dark:text-gray-900">
-          <span>${patient.patientCategory}</span>
-      </span>
-      <td class="p-3">
-      <span class="px-3 py-1 font-semibold rounded-md dark:bg-violet-400 dark:text-gray-900">
-          <span>${patient.priorityStatus}</span>
-      </span>
-  </td>
-</tr>`;
-
-  // Append the row to the table body
-  tableBody.insertAdjacentHTML("beforeend", rowContent);
-});

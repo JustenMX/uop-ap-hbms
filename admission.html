@@ -171,8 +171,11 @@
             action=""
             class="container flex flex-col mx-auto space-y-12"
           >
-            <fieldset
+            <!-- <fieldset
               class="grid grid-cols-4 gap-6 p-6 rounded-lg dark:bg-neutral-900 dark:text-neutral-100 bg-stone-100 shadow-md"
+            > -->
+            <fieldset
+              class="grid grid-cols-4 gap-6 p-6 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-stone-100 shadow-xl"
             >
               <div class="space-y-2 col-span-full lg:col-span-1">
                 <p class="font-medium">Patient Registration</p>
@@ -279,16 +282,18 @@
                 <div class="col-span-full sm:col-span-1 flex justify-center">
                   <button
                     onclick="getAddressFromPostalcode(event)"
-                    class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 rounded-lg text-sm text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800 w-full font-light"
+                    class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 rounded-lg text-sm text-center dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:focus:ring-neutral-700 w-full font-medium shadow-md"
                   >
-                    Generate Address 🔎
+                    Generate Address
                   </button>
                 </div>
 
                 <div
-                  class="col-span-full bg-red-700 text-center rounded-sm mt-4"
+                  class="col-span-full bg-red-800 text-center rounded-sm mt-4"
                 >
-                  <p class="text-neutral-50 text-sm">Hospital Administration</p>
+                  <p class="text-neutral-50 text-sm">
+                    Hospital Administration Purposes
+                  </p>
                 </div>
 
                 <div class="col-span-full sm:col-span-2">
@@ -339,7 +344,7 @@
                   <button
                     onclick="handlePatientSubmission()"
                     type="button"
-                    class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800 w-full"
+                    class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:focus:ring-neutral-700 w-full shadow-md"
                   >
                     Submit
                   </button>
