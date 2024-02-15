@@ -191,7 +191,10 @@ const openPatientDatabase = (patientData) => {
   request.onupgradeneeded = (event) => {
     const db = event.target.result;
     // create search index
-    const objectStore = db.createObjectStore("patients", { keyPath: "uuid" });
+    const objectStore = db.createObjectStore("patients", {
+      keyPath: "id",
+      autoIncrement: true,
+    });
     objectStore.createIndex("firstName", "firstName", { unique: false });
     objectStore.createIndex("lastName", "lastName", { unique: false });
     objectStore.createIndex("email", "email", { unique: true });

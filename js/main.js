@@ -1,3 +1,31 @@
+/**
+ *
+ * Just for the fun of it :)
+ *
+ */
+
+console.log(
+  "     ██╗██╗   ██╗███████╗████████╗███████╗███╗   ██╗███╗   ███╗██╗  ██╗"
+);
+console.log(
+  "     ██║██║   ██║██╔════╝╚══██╔══╝██╔════╝████╗  ██║████╗ ████║╚██╗██╔╝"
+);
+console.log(
+  "     ██║██║   ██║███████╗   ██║   █████╗  ██╔██╗ ██║██╔████╔██║ ╚███╔╝ "
+);
+console.log(
+  "██   ██║██║   ██║╚════██║   ██║   ██╔══╝  ██║╚██╗██║██║╚██╔╝██║ ██╔██╗ "
+);
+console.log(
+  "╚█████╔╝╚██████╔╝███████║   ██║   ███████╗██║ ╚████║██║ ╚═╝ ██║██╔╝ ██╗"
+);
+console.log(
+  " ╚════╝  ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═╝     ╚═╝╚═╝  ╚═╝"
+);
+
+console.log("Page loaded. Initiating system checks...");
+console.log("Watchtower activated. Monitoring all page elements...");
+console.log("Network secured. Proceed with caution.");
 console.log("main.js is running");
 
 /**
