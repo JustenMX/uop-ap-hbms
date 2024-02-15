@@ -49,7 +49,7 @@ const fetchDataFromPatientDatabase = (db) => {
           <td class="p-3">
             <button
               onclick="handlePatientUpdate()"
-              class="text-white bg-blue-800 hover:bg-blue-600 rounded-lg text-sm text-center w-full font-medium shadow-md p-2"
+              class="text-black dark:text-white bg-blue-800 hover:bg-blue-600 rounded-lg text-sm text-center w-full font-medium shadow-md p-2"
             >
               Update
             </button>
