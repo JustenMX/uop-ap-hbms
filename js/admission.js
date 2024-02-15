@@ -1,5 +1,9 @@
 console.log("admission.js is running");
 
+// Get the current time in milliseconds
+const currentTime = new Date().getTime();
+console.log(currentTime);
+
 /**
  * ==============================================
  * Get Address From Postal Code
@@ -39,6 +43,10 @@ const getAddressFromPostalcode = async (event) => {
 const handlePatientSubmission = () => {
   console.log("Patient Registration Submit button clicked");
 
+  /**
+   * declaring variables to form fields
+   */
+
   const firstName = document.getElementById("firstName").value;
   const lastName = document.getElementById("lastName").value;
   const email = document.getElementById("email").value;
@@ -50,22 +58,57 @@ const handlePatientSubmission = () => {
   const adcategory = document.getElementById("adcategory").value;
   const mdcategory = document.getElementById("mdcategory").value;
   const remark = document.getElementById("remark").value;
-  const joinDate = new Date().toISOString(); // ISO format timestamp
+  const timestamp = new Date().toISOString(); // ISO format timestamp
   const uuid = crypto.randomUUID(); // UUID
 
-  // switch statement to handle null field validation
+  /**
+   *
+   * custom validations
+   * https://html.form.guide/snippets/javascript-form-validation-using-regular-expression/
+   * https://confluence.atlassian.com/jirakb/using-forms-regex-validation-1255454685.html
+   *
+   */
+
+  const firstNameRegex = /^[a-zA-Z]{2,}$/;
+  const lastNameRegex = /^[a-zA-Z]{2,}$/;
+  const emailRegex = /^([a-zA-Z0-9_\.]+)@([a-zA-Z0-9_\.]+)\.([a-zA-Z]{2,5})$/;
+  // min 8 char
+  const mobileRegex = /^[0-9]{8,}$/;
+  // min 5 char since other identifications are allowed, aside to NRIC
+  const identificationRegex = /^.{5,}$/;
+
+  /**
+   * switch statement to handle null field and custom validation
+   */
+
   switch (true) {
     case !firstName:
       alert("First Name required!");
       break;
+    case !firstNameRegex.test(firstName):
+      alert(
+        "Please insert a valid first name, no numbers and symbols are allowed."
+      );
+      break;
     case !lastName:
       alert("Last Name required!");
+      break;
+    case !lastNameRegex.test(lastName):
+      alert(
+        "Please insert a valid last name, no numbers and symbols are allowed."
+      );
       break;
     case !email:
       alert("Email required!");
       break;
+    case !emailRegex.test(email):
+      alert("Please insert a valid email address.");
+      break;
     case !mobile:
       alert("Mobile required!");
+      break;
+    case !mobileRegex.test(mobile):
+      alert("Please insert a valid mobile number.");
       break;
     case !dob:
       alert("Date of Birth required!");
@@ -76,6 +119,9 @@ const handlePatientSubmission = () => {
     case !identification:
       alert("Identification required!");
       break;
+    case !identificationRegex.test(identification):
+      alert("Please isnert a valid identification number");
+      break;
     case !address:
       alert("Address required!");
       break;
@@ -85,9 +131,9 @@ const handlePatientSubmission = () => {
     case !mdcategory:
       alert("Medical Category required!");
       break;
-    case !remark:
-      alert("If there is no remarks, input 'no remarks' - do not leave blank!");
-      break;
+    // case !remark:
+    //   alert("If there is no remarks, input 'no remarks' - do not leave blank!");
+    //   break;
     default:
       // create patientData object
       const patientData = {
@@ -103,27 +149,28 @@ const handlePatientSubmission = () => {
         adcategory: adcategory,
         mdcategory: mdcategory,
         remark: remark,
-        joinDate: joinDate,
+        timestamp: timestamp,
       };
-      console.log(patientData);
       openIndexDB(patientData);
       break;
   }
 };
 
 /**
+ *
  * ==============================================
  * Open IndexDB (patientDatabase)
  * ==============================================
- * https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
  * https://medium.com/@kamresh485/indexeddb-tutorial-for-beginners-a-comprehensive-guide-with-coding-examples-74df2914d4d5
- * ==============================================
+ *
  */
 
 const openIndexDB = (patientData) => {
-  // Check if the patientData is passed
+  // Error handling - check if the patientData object is passed
+
   if (!patientData) {
     console.error("Patient data is missing.");
+    alert("⚠️ Error adding patient data, please try again.");
     return;
   } else {
     console.log(patientData);
@@ -131,29 +178,29 @@ const openIndexDB = (patientData) => {
 
   // Open database
   const request = indexedDB.open("patientDatabase", 1);
-  console.log("stage 1");
+  // console.log("stage 1");
 
   // Triggered when DB is first created / version changes
   request.onupgradeneeded = function (event) {
     const db = event.target.result;
+    // create search index
     const objectStore = db.createObjectStore("patients", { keyPath: "uuid" });
-    // objectStore.createIndex("uuid", "uuid", { unique: true });
     objectStore.createIndex("firstName", "firstName", { unique: false });
     objectStore.createIndex("lastName", "lastName", { unique: false });
-    objectStore.createIndex("email", "email", { unique: false });
-    // objectStore.createIndex("mobile", "mobile", { unique: false });
+    objectStore.createIndex("email", "email", { unique: true });
+    objectStore.createIndex("mobile", "mobile", { unique: false });
     // objectStore.createIndex("dob", "dob", { unique: false });
-    // objectStore.createIndex("gender", "gender", { unique: false });
-    // objectStore.createIndex("identification", "identification", {
-    //   unique: false,
-    // });
+    objectStore.createIndex("gender", "gender", { unique: false });
+    objectStore.createIndex("identification", "identification", {
+      unique: true,
+    });
     // objectStore.createIndex("address", "address", { unique: false });
-    // objectStore.createIndex("adcategory", "adcategory", { unique: false });
-    // objectStore.createIndex("mdcategory", "mdcategory", { unique: false });
+    objectStore.createIndex("adcategory", "adcategory", { unique: false });
+    objectStore.createIndex("mdcategory", "mdcategory", { unique: false });
     // objectStore.createIndex("remark", "remark", { unique: false });
-    // objectStore.createIndex("joinDate", "joinDate", { unique: false });
+    // objectStore.createIndex("timestamp", "timestamp", { unique: false });
   };
-  console.log("stage 2");
+  // console.log("stage 2");
   // Handle successful opening of the database
   request.onsuccess = function (event) {
     const db = event.target.result;
@@ -174,13 +221,15 @@ const openIndexDB = (patientData) => {
 
     addRequest.onsuccess = function (event) {
       console.log("Patient data added successfully");
-      alert("🟢 Patient data added successfully");
+      alert("✅ Patient data added successfully");
       window.location.href = "dashboard.html";
     };
 
     addRequest.onerror = function (event) {
       console.error("Error adding patient data: ", event.target.error);
-      alert("⚠️ Error adding patient data, please try again.");
+      alert(
+        "❌ Error adding patient data, please try again. Email and Identification field values should be unique, please do check against Patient Records."
+      );
     };
   };
 
