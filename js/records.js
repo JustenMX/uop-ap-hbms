@@ -25,12 +25,12 @@ const fetchDataFromPatientDatabase = (db) => {
       patientDataArray.push(cursor.value);
       cursor.continue();
     } else {
-      console.log("All objects retrieved:", patientDataArray);
+      // console.log("patientData Obj retrieved:", patientDataArray);
       const tableBody = document.getElementById("recordsTableBody");
       console.log("patientDataArray " + patientDataArray);
       const patientInsertTableRow = patientDataArray.map(
         (patient) =>
-          `<tr class="border-b border-opacity-20 border-neutral-700 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900">
+          `<tr class="border-b border-opacity-20 border-neutral-700 bg-stone-100 dark:border-neutral-700 dark:bg-neutral-800">
         <td class="p-3">${patient.uuid}</td>
         <td class="p-3">${patient.firstName}</td>
         <td class="p-3">${patient.lastName}</td>
@@ -44,7 +44,7 @@ const fetchDataFromPatientDatabase = (db) => {
         <td class="p-3">${patient.mdcategory}</td>
         <td class="p-3">${patient.remark}</td>
         <td class="p-3">${patient.timestamp}</td>
-      </tr>;`
+      </tr>`
       );
       // Join the HTML strings and set as innerHTML of the table body
       tableBody.innerHTML = patientInsertTableRow.join("");
