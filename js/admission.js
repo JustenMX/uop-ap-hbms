@@ -69,12 +69,19 @@ const handlePatientSubmission = () => {
    *
    */
 
+  // Regex for first name: Allows only alphabetic characters, min length 2
   const firstNameRegex = /^[a-zA-Z]{2,}$/;
+
+  // Regex for last name: Allows only alphabetic characters, min length 2
   const lastNameRegex = /^[a-zA-Z]{2,}$/;
+
+  // Regex for email: Covers most email syntaxes
   const emailRegex = /^([a-zA-Z0-9_\.]+)@([a-zA-Z0-9_\.]+)\.([a-zA-Z]{2,5})$/;
-  // min 8 char
+
+  // Regex for mobile: allows only numeric values, min length 6
   const mobileRegex = /^[0-9]{8,}$/;
-  // min 5 char since other identifications are allowed, aside to NRIC
+
+  // Regex for identification: allows alphanumeric values, min length 5
   const identificationRegex = /^.{5,}$/;
 
   /**
@@ -151,7 +158,8 @@ const handlePatientSubmission = () => {
         remark: remark,
         timestamp: timestamp,
       };
-      openIndexDB(patientData);
+      // console.log(patientData);
+      openPatientDatabase(patientData);
       break;
   }
 };
@@ -165,23 +173,22 @@ const handlePatientSubmission = () => {
  *
  */
 
-const openIndexDB = (patientData) => {
+const openPatientDatabase = (patientData) => {
   // Error handling - check if the patientData object is passed
 
   if (!patientData) {
     console.error("Patient data is missing.");
-    alert("⚠️ Error adding patient data, please try again.");
+    alert("❌ Error adding patient data, please try again.");
     return;
   } else {
     console.log(patientData);
   }
 
-  // Open database
+  // open connection to patientDatabase
   const request = indexedDB.open("patientDatabase", 1);
-  // console.log("stage 1");
 
   // Triggered when DB is first created / version changes
-  request.onupgradeneeded = function (event) {
+  request.onupgradeneeded = (event) => {
     const db = event.target.result;
     // create search index
     const objectStore = db.createObjectStore("patients", { keyPath: "uuid" });
@@ -200,32 +207,32 @@ const openIndexDB = (patientData) => {
     // objectStore.createIndex("remark", "remark", { unique: false });
     // objectStore.createIndex("timestamp", "timestamp", { unique: false });
   };
-  // console.log("stage 2");
+
   // Handle successful opening of the database
-  request.onsuccess = function (event) {
+  request.onsuccess = (event) => {
     const db = event.target.result;
     const transaction = db.transaction(["patients"], "readwrite");
 
     // Handle transaction completion
-    transaction.oncomplete = function (event) {
+    transaction.oncomplete = (event) => {
       console.log("Transaction completed");
     };
 
     // Handle transaction error
-    transaction.onerror = function (event) {
+    transaction.onerror = (event) => {
       console.error("Transaction error:", event.target.error);
     };
 
     const objectStore = transaction.objectStore("patients");
     const addRequest = objectStore.add(patientData);
 
-    addRequest.onsuccess = function (event) {
+    addRequest.onsuccess = (event) => {
       console.log("Patient data added successfully");
       alert("✅ Patient data added successfully");
       window.location.href = "dashboard.html";
     };
 
-    addRequest.onerror = function (event) {
+    addRequest.onerror = (event) => {
       console.error("Error adding patient data: ", event.target.error);
       alert(
         "❌ Error adding patient data, please try again. Email and Identification field values should be unique, please do check against Patient Records."
@@ -234,7 +241,7 @@ const openIndexDB = (patientData) => {
   };
 
   // Handle errors when opening the database
-  request.onerror = function (event) {
+  request.onerror = (event) => {
     console.error("Database error: " + event.target.errorCode);
   };
 };
