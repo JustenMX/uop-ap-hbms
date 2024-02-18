@@ -1,21 +1,21 @@
 console.log("records.js is running");
 
 // open connection to patientDatabase
-const request = indexedDB.open("patientDatabase", 1);
+const fetchDB = indexedDB.open("patientDatabase", 1);
 
 // Handle errors when connecting to database
-request.onerror = (event) => {
+fetchDB.onerror = (event) => {
   console.error("Error connecting to database:", event.target.errorCode);
   alert("❌ Error connecting to database.");
 };
 
 // Handle successful DB connection
-request.onsuccess = (event) => {
+fetchDB.onsuccess = (event) => {
   const db = event.target.result;
-  fetchDataFromPatientDatabase(db);
+  fetchData(db);
 };
 
-const fetchDataFromPatientDatabase = (db) => {
+const fetchData = (db) => {
   const transaction = db.transaction(["patients"], "readonly");
   const objectStore = transaction.objectStore("patients");
   const patientDataArray = [];

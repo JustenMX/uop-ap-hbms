@@ -169,7 +169,7 @@ const handlePatientSubmission = () => {
  * ==============================================
  * Open IndexDB (patientDatabase)
  * ==============================================
- * https://medium.com/@kamresh485/indexeddb-tutorial-for-beginners-a-comprehensive-guide-with-coding-examples-74df2914d4d5
+ * https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
  *
  */
 
