@@ -1,10 +1,20 @@
 console.log("dashboard.js is running");
 
-// Simulate a long-running function
-// To test if function in Dashboard.js still executes when navigatign other html paths
+/**
+ * ==============================================
+ * Simulate a long-running function
+ * ==============================================
+ */
+
 // setTimeout(() => {
 //   console.log("Dashboard function completed");
 // }, 5000); // Wait for 5 seconds
+
+/**
+ * ==============================================
+ * Global Data
+ * ==============================================
+ */
 
 const wardStatus = [
   "OCCUPIED",
@@ -16,6 +26,12 @@ const wardStatus = [
 let generalWardBedNo = 1;
 let intensiveWardBedNo = 1;
 let infectiousWardBedNo = 1;
+
+/**
+ * ==============================================
+ * Access IndexDB
+ * ==============================================
+ */
 
 // open connection to patientDatabase
 const request = indexedDB.open("patientDatabase", 1);
@@ -31,6 +47,12 @@ request.onsuccess = (event) => {
   const db = event.target.result;
   fetchDataFromPatientDatabase(db);
 };
+
+/**
+ * ==============================================
+ * fetchDataFromPatientDatabase
+ * ==============================================
+ */
 
 const fetchDataFromPatientDatabase = (db) => {
   const transaction = db.transaction(["patients"], "readonly");
@@ -48,6 +70,12 @@ const fetchDataFromPatientDatabase = (db) => {
     }
   };
 };
+
+/**
+ * ==============================================
+ * handleWardAllocation
+ * ==============================================
+ */
 
 const handleWardAllocation = (patientDataArray) => {
   console.log("handleWardAllocation() executed, we are good to go");
@@ -68,6 +96,12 @@ const handleWardAllocation = (patientDataArray) => {
     }
   }
 };
+
+/**
+ * ==============================================
+ * generalWardAllocation
+ * ==============================================
+ */
 
 const generalWardAllocation = (patient) => {
   console.log("generalWardAllocation() executed");
@@ -178,6 +212,12 @@ const generalWardAllocation = (patient) => {
   }
 };
 
+/**
+ * ==============================================
+ * intensiveWardAllocation
+ * ==============================================
+ */
+
 const intensiveWardAllocation = (patient) => {
   console.log("intensiveWardAllocation() executed");
   console.log(patient);
@@ -286,6 +326,12 @@ const intensiveWardAllocation = (patient) => {
     }
   }
 };
+
+/**
+ * ==============================================
+ * infectiousWardAllocation
+ * ==============================================
+ */
 
 const infectiousWardAllocation = (patient) => {
   console.log("infectiousWardAllocation() executed");

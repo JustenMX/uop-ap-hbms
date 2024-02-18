@@ -157,6 +157,7 @@ const handlePatientSubmission = () => {
         mdcategory: mdcategory,
         remark: remark,
         timestamp: timestamp,
+        status: "available",
       };
       // console.log(patientData);
       openPatientDatabase(patientData);
