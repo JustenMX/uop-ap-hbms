@@ -2,26 +2,9 @@ console.log("dashboard.js is running");
 
 /**
  * ==============================================
- * Simulate a long-running function
+ * * GLOBAL DATA / HIGH ORDER FUNCTIONS
  * ==============================================
  */
-
-// setTimeout(() => {
-//   console.log("Dashboard function completed");
-// }, 5000); // Wait for 5 seconds
-
-/**
- * ==============================================
- * Global Data
- * ==============================================
- */
-
-const wardStatus = [
-  "OCCUPIED",
-  "DISCHARGED PENDING SANITIZING",
-  "SANITIZING",
-  "AVAILABLE",
-];
 
 let generalWardBedNo = 1;
 let intensiveWardBedNo = 1;
@@ -29,7 +12,7 @@ let infectiousWardBedNo = 1;
 
 /**
  * ==============================================
- * Access IndexDB
+ * * ACCESS INDEXDB (patientDatabase)
  * ==============================================
  */
 
@@ -50,7 +33,9 @@ request.onsuccess = (event) => {
 
 /**
  * ==============================================
- * fetchDataFromPatientDatabase
+ * * FETCH THE PATIENT DATA FROM INDEXDB
+ * ==============================================
+ * Function: fetchDataFromPatientDatabase()
  * ==============================================
  */
 
@@ -73,7 +58,15 @@ const fetchDataFromPatientDatabase = (db) => {
 
 /**
  * ==============================================
- * updatePatientStatus
+ * * UPDATE WARD STATUS IN PATIENTS OBJ
+ * ==============================================
+ * Function: updateWardStatus()
+ * ==============================================
+ * Description:
+ * Triggered by Functions
+ * - generalWardAllocation()
+ * - intensiveWardAllocation()
+ * - infectiousWardAllocation()
  * ==============================================
  */
 
@@ -90,8 +83,11 @@ const updateWardStatus = (db, patient, newWardStatus) => {
     const putRequest = objectStore.put(ward);
     console.log("Updated Patient Ward:", ward);
 
+    // Handle the success event of the putRequest
     putRequest.onsuccess = (event) => {
       console.log(`Patient ${ward.id} ward status updated to ${newWardStatus}`);
+      // push the changes to the HTML element
+      document.getElementById("ward-status").innerHTML = newWardStatus;
     };
 
     // Handle the error event of the putRequest
@@ -108,7 +104,15 @@ const updateWardStatus = (db, patient, newWardStatus) => {
 
 /**
  * ==============================================
- * updatePatientStatus
+ * * UPDATE PATIENT STATUS IN PATIENTS OBJ
+ * ==============================================
+ * Function: updatePatientStatus()
+ * ==============================================
+ * Description:
+ * Triggered by Functions
+ * - generalWardAllocation()
+ * - intensiveWardAllocation()
+ * - infectiousWardAllocation()
  * ==============================================
  */
 
@@ -123,8 +127,13 @@ const updatePatientStatus = (db, patient, newStatus) => {
     patient.status = newStatus;
     const putRequest = objectStore.put(patient);
 
+    // Handle the success event of the putRequest
     putRequest.onsuccess = (event) => {
       console.log(`Patient ${patient.id} status updated to ${newStatus}`);
+      // conditional checks for patient.status === "PENDING"
+      if (newStatus !== "PENDING") {
+        document.getElementById("patient-status").innerHTML = newStatus;
+      }
     };
 
     // Handle the error event of the putRequest
@@ -141,7 +150,10 @@ const updatePatientStatus = (db, patient, newStatus) => {
 
 /**
  * ==============================================
- * handleWardAllocation
+ * * HANDLE WARD ALLOCATION
+ * ==============================================
+ * Function: handleWardAllocation()
+ * Description: Use switch statements to segregate function execution based on patients' medical category.
  * ==============================================
  */
 
@@ -167,16 +179,79 @@ const handleWardAllocation = (db, patientDataArray) => {
 
 /**
  * ==============================================
+ * * TIMEOUT LOGIC
  * ==============================================
- * generalWardAllocation
+ * Function: applyTimeoutLogic()
  * ==============================================
+ * Description: Applying the timeout logic based on the requirements. In the inital stages the timeout function was blocking the execution of codes inside other functions since the tineout was placed inside the function. Setting the timeout as a higher order function and using async allowed me to perform the exeuction without blocking other tasks.
  * ==============================================
  */
 
-const generalWardAllocation = (db, patient) => {
+const applyTimeoutLogic = (db, patient) => {
+  return new Promise((resolve, reject) => {
+    // Timeout logic for updating patient status to "WARDED" and ward status to "OCCUPIED" after 1 minute delay
+    setTimeout(() => {
+      updatePatientStatus(db, patient, "WARDED");
+      updateWardStatus(db, patient, "OCCUPIED");
+    }, 60000); // 1 minute in milliseconds
+
+    // Timeout logic for updating patient status to "DISCHARGED" and ward status to "DISCHARGED PENDING SANITIZING" after 2 minute delay
+    setTimeout(() => {
+      updatePatientStatus(db, patient, "DISCHARGED");
+      updateWardStatus(db, patient, "DISCHARGED PENDING SANITIZING");
+    }, 120000); // 2 minute in milliseconds
+
+    // Timeout logic for updating ward status to "SANITIZING" after 1 minute delay
+    setTimeout(() => {
+      updateWardStatus(db, patient, "SANITIZING");
+    }, 60000); // 1 minute in milliseconds
+
+    // Timeout logic for updating ward status to "AVAILABLE" after 2 minute delay
+    setTimeout(() => {
+      updateWardStatus(db, patient, "AVAILABLE");
+      resolve(); // Resolve the promise after all timeout logic is executed
+      window.location.reload(); // Reloads the page
+    }, 120000); // 2 minute in milliseconds
+  });
+};
+
+/**
+ * ==============================================
+ * * TIMER
+ * ==============================================
+ * Function: displayTimer()
+ * ==============================================
+ */
+
+const displayTimer = () => {
+  const dday = new Date();
+  document.getElementById("timer").innerHTML = dday.toLocaleTimeString();
+};
+
+/**
+ * ==============================================
+ * * HANDLE GENERAL WARD ALLOCATION
+ * ==============================================
+ * Function: generalWardAllocation()
+ * ==============================================
+ * Description:
+ * After numerous refactoring, this function handles the allocation of patients to the general ward. It first checks if the patient is already discharged and if the ward is available. If so, it logs a message and returns without further action.
+ *
+ * Otherwise, it checks if there are available beds in the general ward. If there are, it checks if the patient's status is "PENDING". If so, it updates the patient's status to "AVAILABLE" and inserts the Card Div using the insertWardAllocation function. This also makes sure that it piroritizes patients that are in Waiting List (Holding Bay).
+ *
+ * (Post PENDING status are cleared) If the patient's status is not "PENDING", it directly inserts the Card Div.
+ *
+ * Finally, it awaits the completion of the timeout logic using the applyTimeoutLogic function. If there are no available beds, it updates the patient's status to "PENDING".
+ *
+ * ==============================================
+ */
+
+const generalWardAllocation = async (db, patient) => {
   console.log("generalWardAllocation() executed");
   console.log(patient);
 
+  // Conditional statement to omit out patients that fufill the criteria
+
   if (patient.status === "DISCHARGED" && patient.wardStatus === "AVAILABLE") {
     console.log(
       `Patient ${patient.id}: ${patient.firstName} is already discharged.`
@@ -184,541 +259,274 @@ const generalWardAllocation = (db, patient) => {
     return;
   }
 
-  if (generalWardBedNo <= 2 && generalWardBedNo > 0) {
-    const insertWardAllocation = `
-  <div class="col-span-full lg:col-span-1">
-  <div
-    class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center"
-  >
-  <div class="col-span-full lg:col-span-5 flex justify-center">
-  <h1 class="mb-3 font-semibold dark:text-white mt-3">
-    Bed ${generalWardBedNo++}
-  </h1>
-  <img
-  src="./asset/image/dashboard/bed.svg"
-  class="w-8 ml-2 "
-/>
-</div>
-    <p
-      class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-    >
-      <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3"
-        >Patient Name:</span
-      >
-      ${patient.firstName} ${patient.lastName}
-    </p>
-    <p
-      class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-    >
-      <span class="bg-black text-white px-2 py-1 rounded-md w-3"
-        >Identification:</span
-      >
-      ${patient.identification}
-    </p>
-    <p
-      class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-    >
-      <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span
-      >${patient.wardStatus}
-    </p>
-    <p
-    class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-  >
-    <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span> ${
-      patient.status
-    }
-  </p>
-    <p id="timer"
-      class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-    >
-      <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span> 00:00:00
-    </p>
-  </div>
-</div>
-  `;
+  // Additional checks to check the Wards bed quota, patient status pirority and error handling
 
-    const generalWardContainer = document.getElementById("general-ward");
-    if (generalWardContainer) {
-      generalWardContainer.insertAdjacentHTML(
-        "beforeend",
-        insertWardAllocation
-      );
+  if (generalWardBedNo <= 10 && generalWardBedNo > 0) {
+    if (patient.status === "PENDING") {
+      // If Patient Status is "PENDING", means that they are in the waiting list, and their status will be updated to "AVAILABLE"
+      updatePatientStatus(db, patient, "AVAILABLE");
+      // execute the function and pass the patient object
+      insertWardAllocation(patient);
     } else {
-      console.error("General ward container not found.");
-      return;
+      // Once "PENDING" status are priortised, the remaining patients are handled
+      insertWardAllocation(patient);
     }
-
-    /**
-     * ==============================================
-     * TIMEOUT LOGIC
-     * ==============================================
-     * update ward status to "OCCUPIED"
-     * update patient status to 'WARDED"
-     */
-
-    setTimeout(() => {
-      updateWardStatus(db, patient, "OCCUPIED");
-      updatePatientStatus(db, patient, "WARDED");
-      // reload here
-    }, 60000); // 1 minute in milliseconds
-
-    /**
-     * ==============================================
-     * TIMEOUT LOGIC
-     * ==============================================
-     * update patient's status to "DISCHARGED"
-     * update ward status to "DISCHARGED PENDING SANITIZING"
-     */
-    setTimeout(() => {
-      updatePatientStatus(db, patient, "DISCHARGED");
-      updateWardStatus(db, patient, "DISCHARGED PENDING SANITIZING");
-    }, 120000); // 2 minute in milliseconds
-
-    /**
-     * ==============================================
-     * TIMEOUT LOGIC
-     * ==============================================
-     * update ward status to "SANITIZING"
-     */
-    setTimeout(() => {
-      updateWardStatus(db, patient, "SANITIZING");
-    }, 60000); // 1 minute in milliseconds
-
-    /**
-     * ==============================================
-     * TIMEOUT LOGIC
-     * ==============================================
-     * update ward status to "AVAILABLE"
-     */
-    setTimeout(() => {
-      updateWardStatus(db, patient, "AVAILABLE");
-    }, 120000); // 2 minute in milliseconds
-
-    /**
-     * ==============================================
-     * ==============================================
-     */
+    await applyTimeoutLogic(db, patient);
   } else {
-    const insertHoldingBay = `
-  <div class="col-span-full lg:col-span-1">
-  <div
-    class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center"
-  >
-    <h1 class="mb-3 font-semibold dark:text-white">
-      Pending General Ward
-    </h1>
-    <p
-      class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-    >
-      <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3"
-        >Patient Name:</span
-      >
-      ${patient.firstName} ${patient.lastName}
-    </p>
-    <p
-      class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-    >
-      <span class="bg-black text-white px-2 py-1 rounded-md w-3"
-        >Identification:</span
-      >
-      ${patient.identification}
-    </p>
-    <p
-      class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-    >
-      <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span
-      >${patient.wardStatus}
-    </p>
-    <p
-    class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-  >
-    <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span> ${patient.status}
-  </p>
-    <p id="timer"
-      class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-    >
-      <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span> 00:00:00
-    </p>
-  </div>
-</div>
-  `;
+    // If the patients do not fufill any criteria above, they are placed in Waiting List (Holding Bay), and Patient Status updated to "PENDING"
+    updatePatientStatus(db, patient, "PENDING");
+  }
 
-    const holdingBayContainer = document.getElementById("holding-bay");
-    if (holdingBayContainer) {
-      holdingBayContainer.insertAdjacentHTML("beforeend", insertHoldingBay);
+  const insertWardAllocation = (patient) => {
+    // insertWardAllocationHTML contains the entire HTML markup using template literals.
+    const insertWardAllocationHTML = `
+    <div class="col-span-full lg:col-span-1">
+      <div class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center">
+        <div class="col-span-full lg:col-span-5 flex justify-center">
+          <h1 class="mb-3 font-semibold dark:text-white mt-3">
+            Bed ${generalWardBedNo++}
+          </h1>
+          <img src="./asset/image/dashboard/bed.svg" class="w-8 ml-2 " />
+        </div>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3">Patient Name:</span>
+          ${patient.firstName} ${patient.lastName}
+        </p>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md w-3">Identification:</span>
+          ${patient.identification}
+        </p>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span><span
+            id="ward-status">${patient.wardStatus}</span>
+        </p>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span><span id="patient-status">${
+            patient.status
+          }</span>
+        </p>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span>
+          <span id="timer">00.00.00</span>
+        </p>
+      </div>
+    </div>
+  `;
+    // insert insertWardAllocationHTML to DOM
+    const generalWardCard = document.getElementById("general-ward");
+    if (generalWardCard) {
+      generalWardCard.insertAdjacentHTML("beforeend", insertWardAllocationHTML);
+      // Start the timer and run it every second
+      myTimer();
+      setInterval(myTimer, 1000);
     } else {
-      console.error("Holding bay container not found.");
+      // error handling
+      console.error("General Ward card not found.");
       return;
     }
-  }
+  };
 };
 
 /**
  * ==============================================
- * intensiveWardAllocation
+ * * HANDLE INTENSIVE WARD ALLOCATION
+ * ==============================================
+ * Function: intensiveWardAllocation()
+ * ==============================================
+ * Description:
+ * After numerous refactoring, this function handles the allocation of patients to the intensive care ward. It first checks if the patient is already discharged and if the ward is available. If so, it logs a message and returns without further action.
+ *
+ * Otherwise, it checks if there are available beds in the intensive care ward. If there are, it checks if the patient's status is "PENDING". If so, it updates the patient's status to "AVAILABLE" and inserts the Card Div using the insertWardAllocation function. This also makes sure that it piroritizes patients that are in Waiting List (Holding Bay).
+ *
+ * (Post PENDING status are cleared) If the patient's status is not "PENDING", it directly inserts the Card Div.
+ *
+ * Finally, it awaits the completion of the timeout logic using the applyTimeoutLogic function. If there are no available beds, it updates the patient's status to "PENDING".
+ *
  * ==============================================
  */
 
-const intensiveWardAllocation = (db, patient) => {
+const intensiveWardAllocation = async (db, patient) => {
   console.log("intensiveWardAllocation() executed");
   console.log(patient);
-  //
+
+  // Conditional statement to omit out patients that fufill the criteria
+
   if (patient.status === "DISCHARGED" && patient.wardStatus === "AVAILABLE") {
     console.log(
       `Patient ${patient.id}: ${patient.firstName} is already discharged.`
     );
     return;
   }
-  //
-  if (intensiveWardBedNo <= 2 && intensiveWardBedNo > 0) {
-    const insertWardAllocation = `
-    <div class="col-span-full lg:col-span-1">
-    <div
-      class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center"
-    >
-    <div class="col-span-full lg:col-span-5 flex justify-center">
-    <h1 class="mb-3 font-semibold dark:text-white mt-3">
-      Bed ${intensiveWardBedNo++}
-    </h1>
-    <img
-    src="./asset/image/dashboard/bed.svg"
-    class="w-8 ml-2 "
-  />
-</div>
-      <p
-        class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-      >
-        <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3"
-          >Patient Name:</span
-        >
-        ${patient.firstName} ${patient.lastName}
-      </p>
-      <p
-        class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-      >
-        <span class="bg-black text-white px-2 py-1 rounded-md w-3"
-          >Identification:</span
-        >
-        ${patient.identification}
-      </p>
-      <p
-      class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-    >
-      <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span
-      >${patient.wardStatus}
-    </p>
-    <p
-    class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-  >
-    <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span> ${
-      patient.status
-    }
-  </p>
-      <p id="timer"
-        class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-      >
-        <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span> 00:00:00
-      </p>
-    </div>
-  </div>
-    `;
-    const intensiveWardContainer = document.getElementById("intensive-ward");
-    if (intensiveWardContainer) {
-      intensiveWardContainer.insertAdjacentHTML(
-        "beforeend",
-        insertWardAllocation
-      );
+
+  // Additional checks to check the Wards bed quota, patient status pirority and error handling
+
+  if (intensiveWardBedNo <= 10 && intensiveWardBedNo > 0) {
+    if (patient.status === "PENDING") {
+      // If Patient Status is "PENDING", means that they are in the waiting list, and their status will be updated to "AVAILABLE"
+      updatePatientStatus(db, patient, "AVAILABLE");
+      // execute the function and pass the patient object
+      insertWardAllocation(patient);
     } else {
-      console.error("intensive ward container not found.");
-      return;
+      // Once "PENDING" status are prioritized, the remaining patients are handled
+      insertWardAllocation(patient);
     }
-
-    /**
-     * ==============================================
-     * TIMEOUT LOGIC
-     * ==============================================
-     * update ward status to "OCCUPIED"
-     * update patient status to 'WARDED"
-     */
-
-    setTimeout(() => {
-      updateWardStatus(db, patient, "OCCUPIED");
-      updatePatientStatus(db, patient, "WARDED");
-      // reload here
-    }, 60000); // 1 minute in milliseconds
-
-    /**
-     * ==============================================
-     * TIMEOUT LOGIC
-     * ==============================================
-     * update patient's status to "DISCHARGED"
-     * update ward status to "DISCHARGED PENDING SANITIZING"
-     */
-    setTimeout(() => {
-      updatePatientStatus(db, patient, "DISCHARGED");
-      updateWardStatus(db, patient, "DISCHARGED PENDING SANITIZING");
-    }, 120000); // 2 minute in milliseconds
-
-    /**
-     * ==============================================
-     * TIMEOUT LOGIC
-     * ==============================================
-     * update ward status to "SANITIZING"
-     */
-    setTimeout(() => {
-      updateWardStatus(db, patient, "SANITIZING");
-    }, 60000); // 1 minute in milliseconds
-
-    /**
-     * ==============================================
-     * TIMEOUT LOGIC
-     * ==============================================
-     * update ward status to "AVAILABLE"
-     */
-    setTimeout(() => {
-      updateWardStatus(db, patient, "AVAILABLE");
-    }, 120000); // 2 minute in milliseconds
-
-    /**
-     * ==============================================
-     * ==============================================
-     */
+    await applyTimeoutLogic(db, patient);
   } else {
-    const insertHoldingBay = `
-    <div class="col-span-full lg:col-span-1">
-    <div
-      class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center"
-    >
-      <h1 class="mb-3 font-semibold dark:text-white">
-        Pending Intensive Care Ward
-      </h1>
-      <p
-        class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-      >
-        <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3"
-          >Patient Name:</span
-        >
-        ${patient.firstName} ${patient.lastName}
-      </p>
-      <p
-        class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-      >
-        <span class="bg-black text-white px-2 py-1 rounded-md w-3"
-          >Identification:</span
-        >
-        ${patient.identification}
-      </p>
-      <p
-      class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-    >
-      <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span
-      >${patient.wardStatus}
-    </p>
-    <p
-    class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-  >
-    <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span> ${patient.status}
-  </p>
-      <p id="timer"
-        class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-      >
-        <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span> 00:00:00
-      </p>
-    </div>
-  </div>
-    `;
+    // If the patients do not fulfill any criteria above, they are placed in Waiting List (Holding Bay), and Patient Status updated to "PENDING"
+    updatePatientStatus(db, patient, "PENDING");
+  }
 
-    const holdingBayContainer = document.getElementById("holding-bay");
-    if (holdingBayContainer) {
-      holdingBayContainer.insertAdjacentHTML("beforeend", insertHoldingBay);
+  const insertWardAllocation = (patient) => {
+    // insertWardAllocationHTML contains the entire HTML markup using template literals.
+    const insertWardAllocationHTML = `
+      <div class="col-span-full lg:col-span-1">
+        <div class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center">
+          <div class="col-span-full lg:col-span-5 flex justify-center">
+            <h1 class="mb-3 font-semibold dark:text-white mt-3">
+              Bed ${generalWardBedNo++}
+            </h1>
+            <img src="./asset/image/dashboard/bed.svg" class="w-8 ml-2 " />
+          </div>
+          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+            <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3">Patient Name:</span>
+            ${patient.firstName} ${patient.lastName}
+          </p>
+          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+            <span class="bg-black text-white px-2 py-1 rounded-md w-3">Identification:</span>
+            ${patient.identification}
+          </p>
+          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+            <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span><span
+              id="ward-status">${patient.wardStatus}</span>
+          </p>
+          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+            <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span><span id="patient-status">${
+              patient.status
+            }</span>
+          </p>
+          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+            <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span>
+            <span id="timer">00.00.00</span>
+          </p>
+        </div>
+      </div>
+    `;
+    // insert insertWardAllocationHTML to DOM
+    const intensivelWardCard = document.getElementById("intensive-ward");
+    if (intensivelWardCard) {
+      intensivelWardCard.insertAdjacentHTML(
+        "beforeend",
+        insertWardAllocationHTML
+      );
+      // Start the timer and run it every second
+      myTimer();
+      setInterval(myTimer, 1000);
     } else {
-      console.error("Holding bay container not found.");
+      // error handling
+      console.error("General Ward card not found.");
       return;
     }
-  }
+  };
 };
 
 /**
  * ==============================================
- * infectiousWardAllocation
+ * * HANDLE INFECTIOUS DISEASE WARD ALLOCATION
+ * ==============================================
+ * Function: infectiousWardAllocationn()
+ * ==============================================
+ * Description:
+ * After numerous refactoring, this function handles the allocation of patients to the infectious disease ward. It first checks if the patient is already discharged and if the ward is available. If so, it logs a message and returns without further action.
+ *
+ * Otherwise, it checks if there are available beds in the infectious disease ward. If there are, it checks if the patient's status is "PENDING". If so, it updates the patient's status to "AVAILABLE" and inserts the Card Div using the insertWardAllocation function. This also makes sure that it piroritizes patients that are in Waiting List (Holding Bay).
+ *
+ * (Post PENDING status are cleared) If the patient's status is not "PENDING", it directly inserts the Card Div.
+ *
+ * Finally, it awaits the completion of the timeout logic using the applyTimeoutLogic function. If there are no available beds, it updates the patient's status to "PENDING".
+ *
  * ==============================================
  */
 
-const infectiousWardAllocation = (db, patient) => {
+const infectiousWardAllocation = async (db, patient) => {
   console.log("infectiousWardAllocation() executed");
   console.log(patient);
-  //
+
+  // Conditional statement to omit out patients that fufill the criteria
+
   if (patient.status === "DISCHARGED" && patient.wardStatus === "AVAILABLE") {
     console.log(
       `Patient ${patient.id}: ${patient.firstName} is already discharged.`
     );
     return;
   }
-  //
-  if (infectiousWardBedNo <= 2 && infectiousWardBedNo > 0) {
-    const insertWardAllocation = `
-    <div class="col-span-full lg:col-span-1">
-    <div
-      class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center"
-    >
-    <div class="col-span-full lg:col-span-5 flex justify-center">
-    <h1 class="mb-3 font-semibold dark:text-white mt-3">
-      Bed ${infectiousWardBedNo++}
-    </h1>
-    <img
-    src="./asset/image/dashboard/bed.svg"
-    class="w-8 ml-2 "
-  />
-</div>
-      <p
-        class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-      >
-        <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3"
-          >Patient Name:</span
-        >
-        ${patient.firstName} ${patient.lastName}
-      </p>
-      <p
-        class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-      >
-        <span class="bg-black text-white px-2 py-1 rounded-md w-3"
-          >Identification:</span
-        >
-        ${patient.identification}
-      </p>
-      <p
-      class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-    >
-      <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span
-      >${patient.wardStatus}
-    </p>
-    <p
-    class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-  >
-    <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span> ${
-      patient.status
-    }
-  </p>
-      <p id="timer"
-        class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-      >
-        <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span> 00:00:00
-      </p>
-    </div>
-  </div>
-    `;
-    const infectiousWardContainer = document.getElementById("infectious-ward");
-    if (infectiousWardContainer) {
-      infectiousWardContainer.insertAdjacentHTML(
-        "beforeend",
-        insertWardAllocation
-      );
+
+  // Additional checks to check the Wards bed quota, patient status pirority and error handling
+
+  if (infectiousWardBedNo <= 10 && infectiousWardBedNo > 0) {
+    if (patient.status === "PENDING") {
+      // If Patient Status is "PENDING", means that they are in the waiting list, and their status will be updated to "AVAILABLE"
+      updatePatientStatus(db, patient, "AVAILABLE");
+      // execute the function and pass the patient object
+      insertWardAllocation(patient);
     } else {
-      console.error("intensive ward container not found.");
-      return;
+      // Once "PENDING" status are prioritized, the remaining patients are handled
+      insertWardAllocation(patient);
     }
-
-    /**
-     * ==============================================
-     * TIMEOUT LOGIC
-     * ==============================================
-     * update ward status to "OCCUPIED"
-     * update patient status to 'WARDED"
-     */
-
-    setTimeout(() => {
-      updateWardStatus(db, patient, "OCCUPIED");
-      updatePatientStatus(db, patient, "WARDED");
-      // reload here
-    }, 60000); // 1 minute in milliseconds
-
-    /**
-     * ==============================================
-     * TIMEOUT LOGIC
-     * ==============================================
-     * update patient's status to "DISCHARGED"
-     * update ward status to "DISCHARGED PENDING SANITIZING"
-     */
-    setTimeout(() => {
-      updatePatientStatus(db, patient, "DISCHARGED");
-      updateWardStatus(db, patient, "DISCHARGED PENDING SANITIZING");
-    }, 120000); // 2 minute in milliseconds
-
-    /**
-     * ==============================================
-     * TIMEOUT LOGIC
-     * ==============================================
-     * update ward status to "SANITIZING"
-     */
-    setTimeout(() => {
-      updateWardStatus(db, patient, "SANITIZING");
-    }, 60000); // 1 minute in milliseconds
-
-    /**
-     * ==============================================
-     * TIMEOUT LOGIC
-     * ==============================================
-     * update ward status to "AVAILABLE"
-     */
-    setTimeout(() => {
-      updateWardStatus(db, patient, "AVAILABLE");
-    }, 120000); // 2 minute in milliseconds
-
-    /**
-     * ==============================================
-     * ==============================================
-     */
+    await applyTimeoutLogic(db, patient);
   } else {
-    const insertHoldingBay = `
-    <div class="col-span-full lg:col-span-1">
-    <div
-      class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center"
-    >
-      <h1 class="mb-3 font-semibold dark:text-white">
-        Pending Infectious Disease Ward
-      </h1>
-      <p
-        class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-      >
-        <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3"
-          >Patient Name:</span
-        >
-        ${patient.firstName} ${patient.lastName}
-      </p>
-      <p
-        class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-      >
-        <span class="bg-black text-white px-2 py-1 rounded-md w-3"
-          >Identification:</span
-        >
-        ${patient.identification}
-      </p>
-      <p
-      class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-    >
-      <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span
-      >${patient.wardStatus}
-    </p>
-    <p
-    class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-  >
-    <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span> ${patient.status}
-  </p>
-      <p id="timer"
-        class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between"
-      >
-        <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span> 00:00:00
-      </p>
-    </div>
-  </div>
-    `;
+    // If the patients do not fulfill any criteria above, they are placed in Waiting List (Holding Bay), and Patient Status updated to "PENDING"
+    updatePatientStatus(db, patient, "PENDING");
+  }
 
-    const holdingBayContainer = document.getElementById("holding-bay");
-    if (holdingBayContainer) {
-      holdingBayContainer.insertAdjacentHTML("beforeend", insertHoldingBay);
+  const insertWardAllocation = (patient) => {
+    // insertWardAllocationHTML contains the entire HTML markup using template literals.
+    const insertWardAllocationHTML = `
+      <div class="col-span-full lg:col-span-1">
+        <div class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center">
+          <div class="col-span-full lg:col-span-5 flex justify-center">
+            <h1 class="mb-3 font-semibold dark:text-white mt-3">
+              Bed ${generalWardBedNo++}
+            </h1>
+            <img src="./asset/image/dashboard/bed.svg" class="w-8 ml-2 " />
+          </div>
+          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+            <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3">Patient Name:</span>
+            ${patient.firstName} ${patient.lastName}
+          </p>
+          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+            <span class="bg-black text-white px-2 py-1 rounded-md w-3">Identification:</span>
+            ${patient.identification}
+          </p>
+          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+            <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span><span
+              id="ward-status">${patient.wardStatus}</span>
+          </p>
+          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+            <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span><span id="patient-status">${
+              patient.status
+            }</span>
+          </p>
+          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+            <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span>
+            <span id="timer">00.00.00</span>
+          </p>
+        </div>
+      </div>
+    `;
+    // insert insertWardAllocationHTML to DOM
+    const infectiousWardCard = document.getElementById("infectious-ward");
+    if (infectiousWardCard) {
+      infectiousWardCard.insertAdjacentHTML(
+        "beforeend",
+        insertWardAllocationHTML
+      );
+      // Start the timer and run it every second
+      myTimer();
+      setInterval(myTimer, 1000);
     } else {
-      console.error("Holding bay container not found.");
+      // error handling
+      console.error("General Ward card not found.");
       return;
     }
-  }
+  };
 };
