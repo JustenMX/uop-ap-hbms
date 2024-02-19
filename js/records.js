@@ -1,5 +1,11 @@
 console.log("records.js is running");
 
+/**
+ * ==============================================
+ * * ACCESS INDEXDB (patientDatabase)
+ * ==============================================
+ */
+
 // open connection to patientDatabase
 const fetchDB = indexedDB.open("patientDatabase", 1);
 
@@ -15,6 +21,7 @@ fetchDB.onsuccess = (event) => {
   fetchData(db);
 };
 
+// Fetch data from IndexDB (patientDatabase)
 const fetchData = (db) => {
   const transaction = db.transaction(["patients"], "readonly");
   const objectStore = transaction.objectStore("patients");
@@ -25,9 +32,10 @@ const fetchData = (db) => {
       patientDataArray.push(cursor.value);
       cursor.continue();
     } else {
-      // console.log("patientData Obj retrieved:", patientDataArray);
       const tableBody = document.getElementById("recordsTableBody");
-      console.log(patientDataArray);
+      // console.log("Records.html", patientDataArray);
+      // With the fetched data, I use javascript method .map to iterate over the array and push the patint to the table row. Thereafter I push it to the records.html table body.
+      // Within the map, I also include button elements to which I have not built any functionality, but to which I can expand in later stages.
       const patientInsertTableRow = patientDataArray.map(
         (patient) =>
           `<tr
@@ -78,14 +86,17 @@ const fetchData = (db) => {
   };
 };
 
+// empty functions with console logs to handle the onclick for the buttons in the tables
 const handlePatientUpdate = () => {
   console.log("handlePatientUpdate triggered");
 };
 
+// empty functions with console logs to handle the onclick for the buttons in the tables
 const handlePatientDelete = () => {
   console.log("handlePatientDelete triggered");
 };
 
+// empty functions with console logs to handle the onclick for the buttons in the tables
 const handleWardNow = () => {
   console.log("handleWardNow triggered");
 };
