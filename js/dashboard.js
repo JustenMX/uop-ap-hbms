@@ -173,31 +173,19 @@ const handleWardAllocation = (db, patientDataArray) => {
     switch (patient.mdcategory) {
       case "general":
         generalWardAllocation(db, patient);
-        if (
-          patient.status !== "DISCHARGED" &&
-          patient.wardStatus === "WARDED" &&
-          patient.status !== "PENDING"
-        ) {
+        if (patient.status !== "PENDING") {
           generalWardCount++;
         }
         break;
       case "intensive":
         intensiveWardAllocation(db, patient);
-        if (
-          patient.status !== "DISCHARGED" &&
-          patient.wardStatus === "WARDED" &&
-          patient.status !== "PENDING"
-        ) {
+        if (patient.status !== "PENDING") {
           intensiveWardCount++;
         }
         break;
       case "infectious":
         infectiousWardAllocation(db, patient);
-        if (
-          patient.status !== "DISCHARGED" &&
-          patient.wardStatus === "WARDED" &&
-          patient.status !== "PENDING"
-        ) {
+        if (patient.status !== "PENDING") {
           infectiousWardCount++;
         }
         break;
@@ -411,7 +399,8 @@ const generalWardAllocation = async (db, patient) => {
 
 const insertIntensiveWardBed = (patient) => {
   // Generate a unique ID for the timer
-  const timerId = `timer-${intensiveWardBedNo}`;
+  const timerId = `timer-${infectiousWardBedNo}`;
+
   // insertWardAllocationHTML contains the entire HTML markup using template literals.
   const insertWardAllocationHTML = `
     <div class="col-span-full lg:col-span-1">
@@ -566,7 +555,6 @@ const insertInfectiousWardBed = (patient) => {
       insertWardAllocationHTML
     );
     // Start the timer and run it every second
-    displayTimer();
     setInterval(() => displayTimer(timerId), 1000);
   } else {
     // error handling
