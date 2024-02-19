@@ -150,31 +150,96 @@ const updatePatientStatus = (db, patient, newStatus) => {
 
 /**
  * ==============================================
- * * HANDLE WARD SEGREGATION
+ * * HANDLE WARD SEGREGATION & METRICS UPDATE
  * ==============================================
  * Function: handleWardAllocation()
- * Description: Use switch statements to segregate function execution based on patients' medical category.
+ * Description: Use switch statements to segregate function execution based on patients' medical category. Update the dashboard metrics.
+ * In light of time, I decided to handle the dashboard metrics from the same function itself since this function I have access to the full database records without manipulation.
  * ==============================================
  */
 
 const handleWardAllocation = (db, patientDataArray) => {
   console.log("handleWardAllocation() executed, we are good to go");
-  // console.log(patientDataArray);
+
+  // Initialize variables for metrics
+  let totalRecords = patientDataArray.length;
+  let generalWardCount = 0;
+  let intensiveWardCount = 0;
+  let infectiousWardCount = 0;
+  let pendingCount = 0;
+
+  // Iterate through patient data array
   for (const patient of patientDataArray) {
     switch (patient.mdcategory) {
       case "general":
         generalWardAllocation(db, patient);
+        if (
+          patient.status !== "DISCHARGED" &&
+          patient.wardStatus === "WARDED" &&
+          patient.status !== "PENDING"
+        ) {
+          generalWardCount++;
+        }
         break;
       case "intensive":
         intensiveWardAllocation(db, patient);
+        if (
+          patient.status !== "DISCHARGED" &&
+          patient.wardStatus === "WARDED" &&
+          patient.status !== "PENDING"
+        ) {
+          intensiveWardCount++;
+        }
         break;
       case "infectious":
         infectiousWardAllocation(db, patient);
+        if (
+          patient.status !== "DISCHARGED" &&
+          patient.wardStatus === "WARDED" &&
+          patient.status !== "PENDING"
+        ) {
+          infectiousWardCount++;
+        }
         break;
       default:
         continue;
     }
+
+    // Check Patients with Pending Status
+    if (patient.status === "PENDING") {
+      pendingCount++;
+    }
   }
+
+  // Update Dashboard.html with the updated metrics
+  document.getElementById("admission-metric").innerText = totalRecords;
+  document.getElementById("generalward-metric").innerText = generalWardCount;
+  document.getElementById("intensiveward-metric").innerText =
+    intensiveWardCount;
+  document.getElementById("infectiousward-metric").innerText =
+    infectiousWardCount;
+  document.getElementById("pending-metric").innerText = pendingCount;
+
+  // Calculate and update general ward occupancy percentage
+  // 10 beds threshold
+  const generalWardOccupancyPercentage = (generalWardCount / 10) * 100;
+  document.getElementById(
+    "generalward-occupancy"
+  ).innerText = `${generalWardOccupancyPercentage.toFixed(2)}`;
+
+  // Calculate and update intensive care ward occupancy percentage
+  // 10 beds threshold
+  const intensiveWardOccupancyPercentage = (intensiveWardCount / 10) * 100;
+  document.getElementById(
+    "intensiveward-occupancy"
+  ).innerText = `${intensiveWardOccupancyPercentage.toFixed(2)}`;
+
+  // Calculate and update infectious disease ward occupancy percentage
+  // 10 beds threshold
+  const infectiousWardOccupancyPercentage = (infectiousWardCount / 10) * 100;
+  document.getElementById(
+    "infectiousward-occupancy"
+  ).innerText = `${infectiousWardOccupancyPercentage.toFixed(2)}`;
 };
 
 /**

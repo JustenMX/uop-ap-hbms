@@ -184,7 +184,9 @@
                 />
               </div>
               <div class="flex flex-col justify-center align-middle">
-                <p class="text-3xl font-semibold leadi">20</p>
+                <p id="admission-metric" class="text-3xl font-semibold leadi">
+                  20
+                </p>
                 <p class="capitalize">New Admissions</p>
                 <p class="font-extralight text-xs">Today</p>
               </div>
@@ -202,7 +204,9 @@
                 />
               </div>
               <div class="flex flex-col justify-center align-middle">
-                <p class="text-3xl font-semibold leadi">12</p>
+                <p id="generalward-metric" class="text-3xl font-semibold leadi">
+                  12
+                </p>
                 <p class="capitalize">General Ward</p>
                 <p class="font-extralight text-xs">Total Occupancy</p>
               </div>
@@ -220,7 +224,12 @@
                 />
               </div>
               <div class="flex flex-col justify-center align-middle">
-                <p class="text-3xl font-semibold leadi">03</p>
+                <p
+                  id="intensiveward-metric"
+                  class="text-3xl font-semibold leadi"
+                >
+                  03
+                </p>
                 <p class="capitalize">Intensive Care Ward</p>
                 <p class="font-extralight text-xs">Total Occupancy</p>
               </div>
@@ -239,7 +248,12 @@
                 />
               </div>
               <div class="flex flex-col justify-center align-middle">
-                <p class="text-3xl font-semibold leadi">17</p>
+                <p
+                  id="infectiousward-metric"
+                  class="text-3xl font-semibold leadi"
+                >
+                  17
+                </p>
                 <p class="capitalize">Infectious Disease Ward</p>
                 <p class="font-extralight text-xs">Total Occupancy</p>
               </div>
@@ -258,7 +272,9 @@
                 />
               </div>
               <div class="flex flex-col justify-center align-middle">
-                <p class="text-3xl font-semibold leadi">2</p>
+                <p id="pending-metric" class="text-3xl font-semibold leadi">
+                  2
+                </p>
                 <p class="capitalize">Holding Bay</p>
                 <p class="font-extralight text-xs">To Be Warded</p>
               </div>
@@ -277,7 +293,8 @@
               </div>
               <div class="flex flex-col justify-center align-middle">
                 <p class="text-3xl font-semibold leadi">
-                  12<span class="font-medium text-sm ml-1">%</span>
+                  <span id="generalward-occupancy">0</span>
+                  <span class="font-medium text-sm ml-1">%</span>
                 </p>
                 <p class="capitalize">Occupancy</p>
                 <p class="font-extralight text-xs">General Ward</p>
@@ -297,12 +314,14 @@
               </div>
               <div class="flex flex-col justify-center align-middle">
                 <p class="text-3xl font-semibold leadi">
-                  3<span class="font-medium text-sm ml-1">%</span>
+                  <span id="intensiveward-occupancy">0</span>
+                  <span class="font-medium text-sm ml-1">%</span>
                 </p>
                 <p class="capitalize">Occupancy</p>
                 <p class="font-extralight text-xs">Intensive Care Ward</p>
               </div>
             </div>
+            <!-- Infectious Disease Ward Occupancy -->
             <div
               class="flex p-4 space-x-4 rounded-lg md:space-x-6 dark:bg-emerald-900 dark:text-neutral-100 bg-stone-100 shadow-md"
             >
@@ -316,7 +335,8 @@
               </div>
               <div class="flex flex-col justify-center align-middle">
                 <p class="text-3xl font-semibold leadi">
-                  25<span class="font-medium text-sm ml-1">%</span>
+                  <span id="infectiousward-occupancy">0</span>
+                  <span class="font-medium text-sm ml-1">%</span>
                 </p>
                 <p class="capitalize">Occupancy</p>
                 <p class="font-extralight text-xs">Infectious Disease Wardy</p>
