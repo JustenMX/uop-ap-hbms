@@ -1,6 +1,6 @@
 /**
  * ==============================================
- * For for fun of it 😀
+ * * JUST FOR FUN 😀
  * ==============================================
  */
 
@@ -30,7 +30,9 @@ console.log("main.js is running");
 
 /**
  * ==============================================
- * handleForgetPassword
+ * * HANDLE FORGOT PASSWORD (ONCLICK())
+ * ==============================================
+ * Function: handleForgetPassword()
  * ==============================================
  */
 
@@ -41,7 +43,9 @@ const handleForgetPassword = () => {
 
 /**
  * ==============================================
- * handleSignUp
+ * * HANDLE SIGNUP (ONCLICK())
+ * ==============================================
+ * Function: handleSignUp()
  * ==============================================
  */
 
@@ -52,7 +56,13 @@ const handleSignUp = () => {
 
 /**
  * ==============================================
- * handleSignInValidation
+ * * HANDLE SIGN IN VALIDATION (ONCLICK())
+ * ==============================================
+ * Function: handleSignInValidation()
+ * ==============================================
+ * Description: Simple Login validation with hardcoded Username & Password
+ * username: justen
+ * password: password
  * ==============================================
  */
 
@@ -74,7 +84,12 @@ const handleSignInValidation = () => {
 
 /**
  * ==============================================
- * handleLogOff
+ * * HANDLE LOG OFF (ONCLICK())
+ * ==============================================
+ * Function: handleLogOff()
+ * ==============================================
+ * Description: Simple log off that will bring the user to index.html
+ * Log off button can be found in sidebar menu
  * ==============================================
  */
 
@@ -91,7 +106,11 @@ const handleLogOff = () => {
 
 /**
  * ==============================================
- * handleGoHome (404.html)
+ * * HANDLE BACK HOME (ONCLICK())
+ * ==============================================
+ * Function: handleGoHome()
+ * ==============================================
+ * Description: 404 ERROR which is handled by a html, but I did not cater this logic in my project. There a page, and if you navigate to 404.html, it works, but I have not handled the capture of error and navigate to 404.html
  * ==============================================
  */
 
