@@ -1,12 +1,18 @@
 console.log("admission.js is running");
 
-// Get the current time in milliseconds
-const currentTime = new Date().getTime();
-console.log(currentTime);
-
 /**
  * ==============================================
- * Get Address From Postal Code
+ * * FETCH ADDRESS FROM ONEMAP.GOV.SG
+ * ==============================================
+ * Function: getAddressFromPostalcode()
+ * ==============================================
+ * Description:
+ * Retrieves address details using the OneMap API based on a provided postal code.
+ * The function fetches address information without requiring an API key.
+ * If the postal code corresponds to a valid address, it populates the address input field.
+ * The address input field is then disabled to prevent editing, ensuring data accuracy.
+ * If no address is found for the given postal code, it prompts the user with an error message.
+ * This functionality enhances address quality and improves user experience.
  * ==============================================
  */
 
@@ -36,16 +42,16 @@ const getAddressFromPostalcode = async (event) => {
 
 /**
  * ==============================================
- * Handle Patient Registration Form Submission
+ * * HANDLE PATIENT REGISTRATION FORM SUBMISSION
+ * ==============================================
+ * Function: handlePatientSubmission()
  * ==============================================
  */
 
 const handlePatientSubmission = () => {
   console.log("Patient Registration Submit button clicked");
 
-  /**
-   * declaring variables to form fields
-   */
+  // declaring variables to hold the form field values
 
   const firstName = document.getElementById("firstName").value;
   const lastName = document.getElementById("lastName").value;
@@ -62,11 +68,12 @@ const handlePatientSubmission = () => {
   const uuid = crypto.randomUUID(); // UUID
 
   /**
-   *
+   * ==============================================
    * custom validations
-   * https://html.form.guide/snippets/javascript-form-validation-using-regular-expression/
-   * https://confluence.atlassian.com/jirakb/using-forms-regex-validation-1255454685.html
    *
+   * URL: https://html.form.guide/snippets/javascript-form-validation-using-regular-expression/
+   * URL: https://confluence.atlassian.com/jirakb/using-forms-regex-validation-1255454685.html
+   * ==============================================
    */
 
   // Regex for first name: Allows only alphabetic characters, min length 2
@@ -84,9 +91,7 @@ const handlePatientSubmission = () => {
   // Regex for identification: allows alphanumeric values, min length 5
   const identificationRegex = /^.{5,}$/;
 
-  /**
-   * switch statement to handle null field and custom validation
-   */
+  // switch statement to handle null field and custom validation
 
   switch (true) {
     case !firstName:
@@ -167,12 +172,13 @@ const handlePatientSubmission = () => {
 };
 
 /**
- *
  * ==============================================
- * Open IndexDB (patientDatabase)
+ * * OPEN INDEXDB (patientDatabase)
  * ==============================================
- * https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
- *
+ * Function: fetchDataFromPatientDatabase()
+ * ==============================================
+ * URL: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
+ * ==============================================
  */
 
 const openPatientDatabase = (patientData) => {
@@ -199,10 +205,12 @@ const openPatientDatabase = (patientData) => {
     });
     objectStore.createIndex("firstName", "firstName", { unique: false });
     objectStore.createIndex("lastName", "lastName", { unique: false });
+    // unique field
     objectStore.createIndex("email", "email", { unique: true });
     objectStore.createIndex("mobile", "mobile", { unique: false });
     // objectStore.createIndex("dob", "dob", { unique: false });
     objectStore.createIndex("gender", "gender", { unique: false });
+    // unique field
     objectStore.createIndex("identification", "identification", {
       unique: true,
     });
@@ -231,12 +239,14 @@ const openPatientDatabase = (patientData) => {
     const objectStore = transaction.objectStore("patients");
     const addRequest = objectStore.add(patientData);
 
+    // Handle the success event of the addRequest
     addRequest.onsuccess = (event) => {
       console.log("Patient data added successfully");
       alert("✅ Patient data added successfully");
       window.location.href = "dashboard.html";
     };
 
+    // Handle the error event of the addRequest
     addRequest.onerror = (event) => {
       console.error("Error adding patient data: ", event.target.error);
       alert(
