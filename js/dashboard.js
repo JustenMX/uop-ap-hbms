@@ -150,7 +150,7 @@ const updatePatientStatus = (db, patient, newStatus) => {
 
 /**
  * ==============================================
- * * HANDLE WARD ALLOCATION
+ * * HANDLE WARD SEGREGATION
  * ==============================================
  * Function: handleWardAllocation()
  * Description: Use switch statements to segregate function execution based on patients' medical category.
@@ -210,7 +210,6 @@ const applyTimeoutLogic = (db, patient) => {
     setTimeout(() => {
       updateWardStatus(db, patient, "AVAILABLE");
       resolve(); // Resolve the promise after all timeout logic is executed
-      window.location.reload(); // Reloads the page
     }, 120000); // 2 minute in milliseconds
   });
 };
@@ -223,9 +222,67 @@ const applyTimeoutLogic = (db, patient) => {
  * ==============================================
  */
 
-const displayTimer = () => {
+const displayTimer = (timerId) => {
   const dday = new Date();
-  document.getElementById("timer").innerHTML = dday.toLocaleTimeString();
+  document.getElementById(timerId).innerHTML = dday.toLocaleTimeString();
+};
+
+/**
+ * ==============================================
+ * * INSERT GENERAL WARD BED
+ * ==============================================
+ * Function: insertGeneralWardBed()
+ * ==============================================
+ */
+
+const insertGeneralWardBed = (patient) => {
+  // Generate a unique ID for the timer
+  const timerId = `timer-${generalWardBedNo}`;
+  // insertWardAllocationHTML contains the entire HTML markup using template literals.
+  const insertWardAllocationHTML = `
+  <div class="col-span-full lg:col-span-1">
+    <div class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center">
+      <div class="col-span-full lg:col-span-5 flex justify-center">
+        <h1 class="mb-3 font-semibold dark:text-white mt-3">
+          Bed ${generalWardBedNo++}
+        </h1>
+        <img src="./asset/image/dashboard/bed.svg" class="w-8 ml-2 " />
+      </div>
+      <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+        <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3">Patient Name:</span>
+        ${patient.firstName} ${patient.lastName}
+      </p>
+      <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+        <span class="bg-black text-white px-2 py-1 rounded-md w-3">Identification:</span>
+        ${patient.identification}
+      </p>
+      <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+        <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span><span
+          id="ward-status">${patient.wardStatus}</span>
+      </p>
+      <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+        <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span><span id="patient-status">${
+          patient.status
+        }</span>
+      </p>
+      <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+        <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span>
+        <span id="${timerId}">00.00.00</span>
+      </p>
+    </div>
+  </div>
+`;
+  // insert insertWardAllocationHTML to DOM
+  const generalWardCard = document.getElementById("general-ward");
+  if (generalWardCard) {
+    generalWardCard.insertAdjacentHTML("beforeend", insertWardAllocationHTML);
+    // Start the timer and run it every second
+    setInterval(() => displayTimer(timerId), 1000);
+  } else {
+    // error handling
+    console.error("General Ward bed not found.");
+    return;
+  }
 };
 
 /**
@@ -266,25 +323,37 @@ const generalWardAllocation = async (db, patient) => {
       // If Patient Status is "PENDING", means that they are in the waiting list, and their status will be updated to "AVAILABLE"
       updatePatientStatus(db, patient, "AVAILABLE");
       // execute the function and pass the patient object
-      insertWardAllocation(patient);
+      insertGeneralWardBed(patient);
     } else {
       // Once "PENDING" status are priortised, the remaining patients are handled
-      insertWardAllocation(patient);
+      insertGeneralWardBed(patient);
     }
     await applyTimeoutLogic(db, patient);
   } else {
     // If the patients do not fufill any criteria above, they are placed in Waiting List (Holding Bay), and Patient Status updated to "PENDING"
     updatePatientStatus(db, patient, "PENDING");
   }
+  holdingBayAllocation(patient);
+};
 
-  const insertWardAllocation = (patient) => {
-    // insertWardAllocationHTML contains the entire HTML markup using template literals.
-    const insertWardAllocationHTML = `
+/**
+ * ==============================================
+ * * INSERT INTENSIVE CARE WARD BED
+ * ==============================================
+ * Function: insertintensiveWardBed()
+ * ==============================================
+ */
+
+const insertIntensiveWardBed = (patient) => {
+  // Generate a unique ID for the timer
+  const timerId = `timer-${intensiveWardBedNo}`;
+  // insertWardAllocationHTML contains the entire HTML markup using template literals.
+  const insertWardAllocationHTML = `
     <div class="col-span-full lg:col-span-1">
       <div class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center">
         <div class="col-span-full lg:col-span-5 flex justify-center">
           <h1 class="mb-3 font-semibold dark:text-white mt-3">
-            Bed ${generalWardBedNo++}
+            Bed ${intensiveWardBedNo++}
           </h1>
           <img src="./asset/image/dashboard/bed.svg" class="w-8 ml-2 " />
         </div>
@@ -307,24 +376,25 @@ const generalWardAllocation = async (db, patient) => {
         </p>
         <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
           <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span>
-          <span id="timer">00.00.00</span>
+          <span id="${timerId}">00.00.00</span>
         </p>
       </div>
     </div>
   `;
-    // insert insertWardAllocationHTML to DOM
-    const generalWardCard = document.getElementById("general-ward");
-    if (generalWardCard) {
-      generalWardCard.insertAdjacentHTML("beforeend", insertWardAllocationHTML);
-      // Start the timer and run it every second
-      myTimer();
-      setInterval(myTimer, 1000);
-    } else {
-      // error handling
-      console.error("General Ward card not found.");
-      return;
-    }
-  };
+  // insert insertWardAllocationHTML to DOM
+  const intensivelWardCard = document.getElementById("intensive-ward");
+  if (intensivelWardCard) {
+    intensivelWardCard.insertAdjacentHTML(
+      "beforeend",
+      insertWardAllocationHTML
+    );
+    // Start the timer and run it every second
+    setInterval(() => displayTimer(timerId), 1000);
+  } else {
+    // error handling
+    console.error("Intensive Ward bed not found.");
+    return;
+  }
 };
 
 /**
@@ -365,68 +435,79 @@ const intensiveWardAllocation = async (db, patient) => {
       // If Patient Status is "PENDING", means that they are in the waiting list, and their status will be updated to "AVAILABLE"
       updatePatientStatus(db, patient, "AVAILABLE");
       // execute the function and pass the patient object
-      insertWardAllocation(patient);
+      insertIntensiveWardBed(patient);
     } else {
       // Once "PENDING" status are prioritized, the remaining patients are handled
-      insertWardAllocation(patient);
+      insertIntensiveWardBed(patient);
     }
     await applyTimeoutLogic(db, patient);
   } else {
     // If the patients do not fulfill any criteria above, they are placed in Waiting List (Holding Bay), and Patient Status updated to "PENDING"
     updatePatientStatus(db, patient, "PENDING");
   }
+  holdingBayAllocation(patient);
+};
 
-  const insertWardAllocation = (patient) => {
-    // insertWardAllocationHTML contains the entire HTML markup using template literals.
-    const insertWardAllocationHTML = `
-      <div class="col-span-full lg:col-span-1">
-        <div class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center">
-          <div class="col-span-full lg:col-span-5 flex justify-center">
-            <h1 class="mb-3 font-semibold dark:text-white mt-3">
-              Bed ${generalWardBedNo++}
-            </h1>
-            <img src="./asset/image/dashboard/bed.svg" class="w-8 ml-2 " />
-          </div>
-          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
-            <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3">Patient Name:</span>
-            ${patient.firstName} ${patient.lastName}
-          </p>
-          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
-            <span class="bg-black text-white px-2 py-1 rounded-md w-3">Identification:</span>
-            ${patient.identification}
-          </p>
-          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
-            <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span><span
-              id="ward-status">${patient.wardStatus}</span>
-          </p>
-          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
-            <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span><span id="patient-status">${
-              patient.status
-            }</span>
-          </p>
-          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
-            <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span>
-            <span id="timer">00.00.00</span>
-          </p>
+/**
+ * ==============================================
+ * * INSERT INFECTIOUS DISEASE WARD BED
+ * ==============================================
+ * Function: insertInfectiousWardBed()
+ * ==============================================
+ */
+
+const insertInfectiousWardBed = (patient) => {
+  // Generate a unique ID for the timer
+  const timerId = `timer-${infectiousWardBedNo}`;
+  // insertWardAllocationHTML contains the entire HTML markup using template literals.
+  const insertWardAllocationHTML = `
+    <div class="col-span-full lg:col-span-1">
+      <div class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center">
+        <div class="col-span-full lg:col-span-5 flex justify-center">
+          <h1 class="mb-3 font-semibold dark:text-white mt-3">
+            Bed ${infectiousWardBedNo++}
+          </h1>
+          <img src="./asset/image/dashboard/bed.svg" class="w-8 ml-2 " />
         </div>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3">Patient Name:</span>
+          ${patient.firstName} ${patient.lastName}
+        </p>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md w-3">Identification:</span>
+          ${patient.identification}
+        </p>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span><span
+            id="ward-status">${patient.wardStatus}</span>
+        </p>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span><span id="patient-status">${
+            patient.status
+          }</span>
+        </p>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span>
+          <span id="${timerId}">00.00.00</span>
+        </p>
       </div>
-    `;
-    // insert insertWardAllocationHTML to DOM
-    const intensivelWardCard = document.getElementById("intensive-ward");
-    if (intensivelWardCard) {
-      intensivelWardCard.insertAdjacentHTML(
-        "beforeend",
-        insertWardAllocationHTML
-      );
-      // Start the timer and run it every second
-      myTimer();
-      setInterval(myTimer, 1000);
-    } else {
-      // error handling
-      console.error("General Ward card not found.");
-      return;
-    }
-  };
+    </div>
+  `;
+  // insert insertWardAllocationHTML to DOM
+  const infectiousWardCard = document.getElementById("infectious-ward");
+  if (infectiousWardCard) {
+    infectiousWardCard.insertAdjacentHTML(
+      "beforeend",
+      insertWardAllocationHTML
+    );
+    // Start the timer and run it every second
+    displayTimer();
+    setInterval(() => displayTimer(timerId), 1000);
+  } else {
+    // error handling
+    console.error("Infectious Disease Ward bed not found.");
+    return;
+  }
 };
 
 /**
@@ -467,66 +548,86 @@ const infectiousWardAllocation = async (db, patient) => {
       // If Patient Status is "PENDING", means that they are in the waiting list, and their status will be updated to "AVAILABLE"
       updatePatientStatus(db, patient, "AVAILABLE");
       // execute the function and pass the patient object
-      insertWardAllocation(patient);
+      infectiousWardAllocation(patient);
     } else {
       // Once "PENDING" status are prioritized, the remaining patients are handled
-      insertWardAllocation(patient);
+      infectiousWardAllocation(patient);
     }
     await applyTimeoutLogic(db, patient);
   } else {
     // If the patients do not fulfill any criteria above, they are placed in Waiting List (Holding Bay), and Patient Status updated to "PENDING"
     updatePatientStatus(db, patient, "PENDING");
   }
+  holdingBayAllocation(patient);
+};
 
-  const insertWardAllocation = (patient) => {
-    // insertWardAllocationHTML contains the entire HTML markup using template literals.
-    const insertWardAllocationHTML = `
-      <div class="col-span-full lg:col-span-1">
-        <div class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center">
-          <div class="col-span-full lg:col-span-5 flex justify-center">
-            <h1 class="mb-3 font-semibold dark:text-white mt-3">
-              Bed ${generalWardBedNo++}
-            </h1>
-            <img src="./asset/image/dashboard/bed.svg" class="w-8 ml-2 " />
-          </div>
-          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
-            <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3">Patient Name:</span>
-            ${patient.firstName} ${patient.lastName}
-          </p>
-          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
-            <span class="bg-black text-white px-2 py-1 rounded-md w-3">Identification:</span>
-            ${patient.identification}
-          </p>
-          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
-            <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span><span
-              id="ward-status">${patient.wardStatus}</span>
-          </p>
-          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
-            <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span><span id="patient-status">${
-              patient.status
-            }</span>
-          </p>
-          <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
-            <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span>
-            <span id="timer">00.00.00</span>
-          </p>
+/**
+ * ==============================================
+ * * INSERT HOLDING BAY
+ * ==============================================
+ * Function: insertHoldingBay()
+ * ==============================================
+ */
+
+const insertHoldingBay = (patient) => {
+  // insertWardAllocationHTML contains the entire HTML markup using template literals.
+  const insertWardAllocationHTML = `
+    <div class="col-span-full lg:col-span-1">
+      <div class="flex flex-col p-4 rounded-lg dark:bg-emerald-900 dark:text-neutral-100 bg-emerald-100 shadow-xl text-center">
+        <div class="col-span-full lg:col-span-5 flex justify-center">
+          <h1 class="mb-3 font-semibold dark:text-white mt-3">
+            PENDING WARD ALLOCATION
+          </h1>
+          <img src="./asset/image/dashboard/bed.svg" class="w-8 ml-2 " />
         </div>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md ml-3 w-3">Patient Name:</span>
+          ${patient.firstName} ${patient.lastName}
+        </p>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md w-3">Identification:</span>
+          ${patient.identification}
+        </p>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md">Ward Status:</span><span
+            id="ward-status">${patient.wardStatus}</span>
+        </p>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md">Patient Status:</span><span id="patient-status">${patient.status}</span>
+        </p>
+        <p class="border-2 bg-white border-gray-200 rounded-md px-2 py-1 mb-2 flex justify-between">
+          <span class="bg-black text-white px-2 py-1 rounded-md">Timer:</span>
+          <span id="${timerId}">00.00.00</span>
+        </p>
       </div>
-    `;
-    // insert insertWardAllocationHTML to DOM
-    const infectiousWardCard = document.getElementById("infectious-ward");
-    if (infectiousWardCard) {
-      infectiousWardCard.insertAdjacentHTML(
-        "beforeend",
-        insertWardAllocationHTML
-      );
-      // Start the timer and run it every second
-      myTimer();
-      setInterval(myTimer, 1000);
-    } else {
-      // error handling
-      console.error("General Ward card not found.");
-      return;
-    }
-  };
+    </div>
+  `;
+  // insert insertWardAllocationHTML to DOM
+  const holdingBayCard = document.getElementById("holding-bay");
+  if (holdingBayCard) {
+    holdingBayCard.insertAdjacentHTML("beforeend", insertWardAllocationHTML);
+  } else {
+    // error handling
+    console.error("Holding Bay Ward bed not found.");
+    return;
+  }
+};
+
+/**
+ * ==============================================
+ * * HANDLE HOLDING BAY WARD ALLOCATION
+ * ==============================================
+ * Function: infectiousWardAllocationn()
+ * ==============================================
+ * Description:
+ *
+ * ==============================================
+ */
+
+const holdingBayAllocation = async (patient) => {
+  if (patient.status === "DISCHARGED" && patient.wardStatus === "AVAILABLE") {
+    insertHoldingBay(patient);
+  } else {
+    return;
+  }
 };
